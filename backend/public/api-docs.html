@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Host - API Documentation</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            margin-top: 2rem;
+            color: #374151;
+        }
+
+        .endpoint {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+        }
+
+        .method {
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .post {
+            background-color: #10b981;
+        }
+
+        .delete {
+            background-color: #ef4444;
+        }
+
+        .path {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 1rem;
+        }
+
+        pre {
+            background-color: #1f2937;
+            color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+
+        code {
+            background-color: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>API Documentation</h1>
+        <p>Welcome to the Tiny Host API. Use these endpoints to manage your static sites.</p>
+
+        <!-- Upload Endpoint -->
+        <div class="endpoint">
+            <div class="header">
+                <span class="method post">POST</span>
+                <span class="path">/upload</span>
+            </div>
+            <div class="content">
+                <p>Uploads a ZIP file or a single HTML file to create a new site.</p>
+
+                <h3>Request Body (multipart/form-data)</h3>
+                <table>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>folderName</code></td>
+                        <td>String</td>
+                        <td><strong>Required</strong>. The name of the site (URL path).</td>
+                    </tr>
+                    <tr>
+                        <td><code>overwrite</code></td>
+                        <td>Boolean</td>
+                        <td>Optional. Set to <code>true</code> to replace an existing site.</td>
+                    </tr>
+                    <tr>
+                        <td><code>file</code></td>
+                        <td>File</td>
+                        <td><strong>Required</strong>. The .zip or .html file to upload.</td>
+                    </tr>
+                </table>
+
+                <h3>Example Response</h3>
+                <pre>{
+  "message": "File uploaded and deployed successfully",
+  "path": "/public/my-site"
+}</pre>
+            </div>
+        </div>
+
+        <!-- Delete Endpoint -->
+        <div class="endpoint">
+            <div class="header">
+                <span class="method delete">DELETE</span>
+                <span class="path">/delete/:folderName</span>
+            </div>
+            <div class="content">
+                <p>Deletes an existing site and all its contents.</p>
+
+                <h3>Parameters</h3>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>In</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>folderName</code></td>
+                        <td>Path</td>
+                        <td><strong>Required</strong>. The name of the site to delete.</td>
+                    </tr>
+                </table>
+
+                <h3>Example Response</h3>
+                <pre>{
+  "message": "Site 'my-site' deleted successfully"
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

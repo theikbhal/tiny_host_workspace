@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Host - Dashboard</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .drop-zone p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        #status {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .success {
+            color: #10b981;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            width: auto;
+        }
+
+        .logout-btn:hover {
+            text-decoration: underline;
+            background: none;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="user-info" id="userInfo"></span>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+        <h1>Deploy Your Site</h1>
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & Drop your ZIP or HTML file here or click to select</p>
+            <input type="file" id="fileInput" accept=".zip,.html">
+        </div>
+        <p id="fileName" style="margin-bottom: 1rem; color: #4b5563; font-size: 0.9rem;"></p>
+        <input type="text" id="folderName" placeholder="Enter site name (e.g., my-site)" required>
+
+        <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 1rem; width: 100%;">
+            <input type="checkbox" id="overwrite" style="width: auto; margin-right: 0.5rem; margin-bottom: 0;">
+            <label for="overwrite" style="color: #4b5563; font-size: 0.9rem; cursor: pointer;">Overwrite existing
+                site</label>
+        </div>
+
+        <button id="uploadBtn">Deploy</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Auth Check
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) {
+            window.location.href = '/login.html';
+        } else {
+            document.getElementById('userInfo').textContent = `Hi, ${user.name}`;
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        });
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const folderNameInput = document.getElementById('folderName');
+        const overwriteCheckbox = document.getElementById('overwrite');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusDiv = document.getElementById('status');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                fileNameDisplay.textContent = `Selected: ${selectedFile.name}`;
+            }
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.type === "application/x-zip-compressed" || file.name.endsWith('.zip') ||
+                    file.type === "text/html" || file.name.endsWith('.html')) {
+                    selectedFile = file;
+                    fileNameDisplay.textContent = `Selected: ${selectedFile.name}`;
+                } else {
+                    alert("Please upload a ZIP or HTML file.");
+                    selectedFile = null;
+                }
+            }
+        });
+
+        uploadBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                statusDiv.textContent = 'Please select a ZIP file.';
+                statusDiv.className = 'error';
+                return;
+            }
+            if (!folderNameInput.value.trim()) {
+                statusDiv.textContent = 'Please enter a site name.';
+                statusDiv.className = 'error';
+                return;
+            }
+
+            const formData = new FormData();
+            // Append text fields BEFORE the file for Multer to process them correctly
+            formData.append('folderName', folderNameInput.value.trim());
+            formData.append('overwrite', overwriteCheckbox.checked);
+            formData.append('file', selectedFile);
+
+            statusDiv.textContent = 'Uploading...';
+            statusDiv.className = '';
+            uploadBtn.disabled = true;
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusDiv.textContent = `Success! Site deployed at: ${result.path}`;
+                    statusDiv.className = 'success';
+                } else {
+                    statusDiv.textContent = result.error || 'Upload failed.';
+                    statusDiv.className = 'error';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'An error occurred.';
+                statusDiv.className = 'error';
+                console.error(error);
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
