@@ -36,3 +36,6 @@ coverage/
 # Build
 dist/
 build/
+
+uploads/*
+!/uploads/.gitkeep

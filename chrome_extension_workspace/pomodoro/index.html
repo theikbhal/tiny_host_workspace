@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pomodoro Pocket Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ========== RESET ========== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1d2538 0, #020617 55%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      max-width: 480px;
+      margin: auto;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.97);
+      border-radius: 18px;
+      padding: 18px 18px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+    }
+
+    /* ========== HEADER ========== */
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: conic-gradient(from 200deg, #f97316, #f97316, #ef4444, #fb7185, #f97316);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.3);
+      flex-shrink: 0;
+    }
+
+    .logo-circle span {
+      color: #020617;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 1px;
+    }
+
+    .chip-mini {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(127, 29, 29, 0.4);
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    /* ========== MODE BUTTONS ========== */
+    .mode-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .mode-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      color: #9ca3af;
+      font-size: 12px;
+      padding: 7px 4px;
+      text-align: center;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .mode-btn span {
+      font-size: 10px;
+      opacity: 0.75;
+      display: block;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #f97316, #ef4444);
+      color: #020617;
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .mode-btn.active span {
+      opacity: 0.9;
+    }
+
+    /* ========== TIMER ========== */
+    .timer-shell {
+      margin: 0 auto 16px;
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 1 / 1;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, rgba(248, 250, 252, 0.12), transparent 55%),
+        radial-gradient(circle at bottom, rgba(248, 113, 113, 0.35), rgba(30, 64, 175, 0.05));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timer-inner-ring {
+      position: absolute;
+      inset: 10px;
+      border-radius: inherit;
+      border: 1px dashed rgba(148, 163, 184, 0.5);
+      pointer-events: none;
+    }
+
+    .timer-main {
+      text-align: center;
+      z-index: 1;
+    }
+
+    .timer-label {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #cbd5f5;
+      margin-bottom: 4px;
+    }
+
+    .timer-time {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 24px rgba(15, 23, 42, 0.8);
+    }
+
+    .timer-note {
+      font-size: 11px;
+      color: #e5e7eb;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    /* ========== CONTROLS ========== */
+    .control-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary {
+      flex: 1.2;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #f97316, #ef4444);
+      color: #020617;
+      font-weight: 700;
+      padding: 10px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      flex: 0.8;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-weight: 500;
+      padding: 10px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-primary:active,
+    .btn-secondary:active {
+      transform: translateY(1px);
+      filter: brightness(0.97);
+    }
+
+    /* ========== STATS / FOOTER ========== */
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .pills {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 3px 7px;
+      font-size: 10px;
+    }
+
+    .pill-okay {
+      border-color: rgba(16, 185, 129, 0.7);
+      color: #6ee7b7;
+    }
+
+    .footer {
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(55, 65, 81, 0.9);
+      font-size: 10px;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 32px;
+      }
+      .brand-title {
+        font-size: 20px;
+      }
+      .timer-time {
+        font-size: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <div class="card">
+      <!-- HEADER -->
+      <div class="top-row">
+        <div class="brand">
+          <div class="logo-circle"><span>●</span></div>
+          <div>
+            <div class="brand-title">Prabhu Pomodoro Pocket</div>
+            <div class="brand-sub">Mobile focus cycles, one tap</div>
+          </div>
+        </div>
+        <div class="chip-mini">25 / 5 / 15</div>
+      </div>
+
+      <!-- MODES -->
+      <div class="mode-row">
+        <button class="mode-btn active" data-mode="focus">
+          Focus
+          <span>25:00</span>
+        </button>
+        <button class="mode-btn" data-mode="short">
+          Short break
+          <span>5:00</span>
+        </button>
+        <button class="mode-btn" data-mode="long">
+          Long break
+          <span>15:00</span>
+        </button>
+      </div>
+
+      <!-- TIMER -->
+      <div class="timer-shell">
+        <div class="timer-inner-ring"></div>
+        <div class="timer-main">
+          <div class="timer-label" id="modeLabel">FOCUS</div>
+          <div class="timer-time" id="timeDisplay">25:00</div>
+          <div class="timer-note" id="timerNote">Tap Start to begin</div>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="control-row">
+        <button class="btn-primary" id="startPauseBtn">Start</button>
+        <button class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+
+      <!-- META -->
+      <div class="meta-row">
+        <div>
+          <div>Completed focus sessions: <strong id="cyclesCount">0</strong></div>
+          <div id="nextUp" style="margin-top:2px; font-size:10px;">Next: Short break (5 min)</div>
+        </div>
+        <div class="pills">
+          <span class="pill">Sound: on session end 🔔</span>
+          <span class="pill pill-okay">Mobile first</span>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        <span>Stays on this page only</span>
+        <span>v1.0</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const MODES = {
+        focus: 25 * 60,
+        short: 5 * 60,
+        long: 15 * 60,
+      };
+
+      let currentMode = "focus";
+      let remaining = MODES[currentMode];
+      let isRunning = false;
+      let timerId = null;
+      let completedFocus = 0;
+
+      const modeButtons = document.querySelectorAll(".mode-btn");
+      const modeLabel = document.getElementById("modeLabel");
+      const timeDisplay = document.getElementById("timeDisplay");
+      const timerNote = document.getElementById("timerNote");
+      const startPauseBtn = document.getElementById("startPauseBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const cyclesCount = document.getElementById("cyclesCount");
+      const nextUp = document.getElementById("nextUp");
+
+      // ---- AUDIO (simple beep) ----
+      function playBeep() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioCtx();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.value = 880;
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          const now = ctx.currentTime;
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(0.5, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+
+          osc.start(now);
+          osc.stop(now + 0.9);
+        } catch (e) {
+          // audio not essential, ignore errors
+        }
+      }
+
+      // ---- HELPERS ----
+      function formatTime(totalSeconds) {
+        const m = Math.floor(totalSeconds / 60)
+          .toString()
+          .padStart(2, "0");
+        const s = (totalSeconds % 60).toString().padStart(2, "0");
+        return m + ":" + s;
+      }
+
+      function getNextModeAfter(mode) {
+        if (mode === "focus") {
+          // after every 4th focus, long break
+          if ((completedFocus + 1) % 4 === 0) return "long";
+          return "short";
+        }
+        // after any break, go back to focus
+        return "focus";
+      }
+
+      function updateNextUpText() {
+        const m = getNextModeAfter(currentMode);
+        if (m === "focus") {
+          nextUp.textContent = "Next: Focus (25 min)";
+        } else if (m === "short") {
+          nextUp.textContent = "Next: Short break (5 min)";
+        } else {
+          nextUp.textContent = "Next: Long break (15 min)";
+        }
+      }
+
+      function updateModeVisuals() {
+        modeButtons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.mode === currentMode);
+        });
+        modeLabel.textContent = currentMode === "focus"
+          ? "FOCUS"
+          : currentMode === "short"
+          ? "SHORT BREAK"
+          : "LONG BREAK";
+      }
+
+      function render() {
+        timeDisplay.textContent = formatTime(remaining);
+        cyclesCount.textContent = completedFocus.toString();
+        updateNextUpText();
+      }
+
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        isRunning = false;
+        startPauseBtn.textContent = "Start";
+      }
+
+      // ---- MODE SWITCH ----
+      function switchMode(newMode) {
+        currentMode = newMode;
+        remaining = MODES[currentMode];
+        stopTimer();
+        updateModeVisuals();
+        timerNote.textContent = "Tap Start to begin";
+        render();
+      }
+
+      modeButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const mode = btn.dataset.mode;
+          switchMode(mode);
+        });
+      });
+
+      // ---- TIMER TICK ----
+      function tick() {
+        if (!isRunning) return;
+        remaining -= 1;
+        if (remaining <= 0) {
+          remaining = 0;
+          render();
+          stopTimer();
+          playBeep();
+
+          // session finished
+          if (currentMode === "focus") {
+            completedFocus += 1;
+          }
+
+          const nextModeAuto = getNextModeAfter(currentMode);
+          currentMode = nextModeAuto;
+          remaining = MODES[currentMode];
+          updateModeVisuals();
+          render();
+          timerNote.textContent = "Session done! Tap Start for next phase.";
+          return;
+        }
+        render();
+      }
+
+      // ---- CONTROLS ----
+      startPauseBtn.addEventListener("click", () => {
+        if (isRunning) {
+          // pause
+          stopTimer();
+          timerNote.textContent = "Paused. Tap Start to resume.";
+          return;
+        }
+        // start
+        isRunning = true;
+        startPauseBtn.textContent = "Pause";
+        timerNote.textContent = "Running... stay focused.";
+        if (timerId) clearInterval(timerId);
+        timerId = setInterval(tick, 1000);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        remaining = MODES[currentMode];
+        stopTimer();
+        timerNote.textContent = "Reset. Tap Start to begin.";
+        render();
+      });
+
+      // ---- INIT ----
+      updateModeVisuals();
+      render();
+    })();
+  </script>
+</body>
+</html>
