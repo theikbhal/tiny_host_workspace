@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authMiddleware = require('./middleware/auth');
+const subdomainMiddleware = require('./middleware/subdomain');
 const apiRoutes = require('./routes/api');
+const siteRoutes = require('./routes/site');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +13,11 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Apply subdomain extraction middleware globally
+app.use(subdomainMiddleware);
+
+// Static files (for login, dashboard, etc.)
 app.use(express.static('public'));
 
 const authRoutes = require('./routes/auth');
@@ -18,6 +25,9 @@ const authRoutes = require('./routes/auth');
 // Routes
 app.use('/v1', authMiddleware, apiRoutes);
 app.use('/auth', authRoutes);
+
+// Site rendering routes (must be after other routes to avoid conflicts)
+app.use(siteRoutes);
 
 // Health check
 app.get('/', (req, res) => {

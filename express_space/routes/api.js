@@ -3,11 +3,13 @@ const router = express.Router();
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
+const AdmZip = require('adm-zip');
 
-// Configure multer for file uploads
+// Configure multer for file uploads (temporary storage)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'uploads/temp/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -19,6 +21,51 @@ const upload = multer({ storage: storage });
 
 // Mock data store
 const projects = {};
+
+// Helper function to ensure directory exists
+const ensureDir = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+};
+
+// Helper function to process uploaded file
+const processUploadedFile = (file, domain) => {
+    const siteDir = path.join(__dirname, '..', 'uploads', domain);
+    ensureDir(siteDir);
+
+    const fileExt = path.extname(file.originalname).toLowerCase();
+
+    if (fileExt === '.zip') {
+        // Extract ZIP file
+        try {
+            const zip = new AdmZip(file.path);
+            zip.extractAllTo(siteDir, true);
+
+            // Delete the temporary ZIP file
+            fs.unlinkSync(file.path);
+
+            return { success: true, type: 'zip', extracted: true };
+        } catch (error) {
+            return { success: false, error: 'Failed to extract ZIP file: ' + error.message };
+        }
+    } else if (fileExt === '.html' || fileExt === '.htm') {
+        // Move HTML file to site directory as index.html
+        const targetPath = path.join(siteDir, 'index.html');
+        fs.renameSync(file.path, targetPath);
+
+        return { success: true, type: 'html', file: targetPath };
+    } else {
+        // For other files, move to site directory with original name
+        const targetPath = path.join(siteDir, file.originalname);
+        fs.renameSync(file.path, targetPath);
+
+        return { success: true, type: 'other', file: targetPath };
+    }
+};
+
+// Ensure temp directory exists
+ensureDir(path.join(__dirname, '..', 'uploads', 'temp'));
 
 // POST /v1/upload - Create Project
 router.post('/upload', upload.single('files'), (req, res) => {
@@ -32,11 +79,18 @@ router.post('/upload', upload.single('files'), (req, res) => {
     const projectId = domain || uuidv4();
     const link = `${projectId}.tiiny.site`;
 
+    // Process the uploaded file
+    const result = processUploadedFile(file, projectId);
+
+    if (!result.success) {
+        return res.status(500).json({ success: false, error: result.error });
+    }
+
     projects[projectId] = {
         id: projectId,
         link: link,
         status: 'active',
-        file: file.path,
+        fileType: result.type,
         settings: siteSettings ? JSON.parse(siteSettings) : {},
         createdAt: new Date()
     };
@@ -63,19 +117,37 @@ router.put('/upload', upload.single('files'), (req, res) => {
         return res.status(400).json({ success: false, error: 'Domain is required for update' });
     }
 
-    // In a real app, check if project exists. For mock, we just upsert/update.
-    const projectId = domain; // Simplified
+    const projectId = domain;
     const link = `${projectId}.tiiny.site`;
 
-    projects[projectId] = {
-        ...projects[projectId],
-        id: projectId,
-        link: link,
-        status: 'active',
-        file: file ? file.path : projects[projectId]?.file,
-        settings: siteSettings ? JSON.parse(siteSettings) : (projects[projectId]?.settings || {}),
-        updatedAt: new Date()
-    };
+    // Process the uploaded file if provided
+    if (file) {
+        const result = processUploadedFile(file, projectId);
+
+        if (!result.success) {
+            return res.status(500).json({ success: false, error: result.error });
+        }
+
+        projects[projectId] = {
+            ...projects[projectId],
+            id: projectId,
+            link: link,
+            status: 'active',
+            fileType: result.type,
+            settings: siteSettings ? JSON.parse(siteSettings) : (projects[projectId]?.settings || {}),
+            updatedAt: new Date()
+        };
+    } else {
+        // Update settings only
+        projects[projectId] = {
+            ...projects[projectId],
+            id: projectId,
+            link: link,
+            status: 'active',
+            settings: siteSettings ? JSON.parse(siteSettings) : (projects[projectId]?.settings || {}),
+            updatedAt: new Date()
+        };
+    }
 
     res.json({
         success: true,
