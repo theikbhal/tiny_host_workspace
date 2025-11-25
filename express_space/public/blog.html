@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Tiiny Host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-link:hover {
+            opacity: 0.8;
+        }
+
+        .manage-sites-btn {
+            background: white;
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.25rem;
+            margin-bottom: 4rem;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-date {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .blog-excerpt {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .blog-read-more {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .blog-read-more:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+
+<div class="blog-grid">
+    <div class="blog-card">
+        <div class="blog-image">🚀</div>
+        <div class="blog-content">
+            <div class="blog-date">November 25, 2025</div>
+            <h2 class="blog-title">Getting Started with Tiiny Host</h2>
+            <p class="blog-excerpt">
+                Learn how to deploy your first static website in under 60 seconds with Tiiny Host. No
+                configuration required!
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+
+    <div class="blog-card">
+        <div class="blog-image">🎨</div>
+        <div class="blog-content">
+            <div class="blog-date">November 20, 2025</div>
+            <h2 class="blog-title">Best Practices for Static Sites</h2>
+            <p class="blog-excerpt">
+                Discover the best practices for building fast, SEO-friendly static websites that perform great
+                on any device.
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+
+    <div class="blog-card">
+        <div class="blog-image">🔒</div>
+        <div class="blog-content">
+            <div class="blog-date">November 15, 2025</div>
+            <h2 class="blog-title">HTTPS and SSL Certificates</h2>
+            <p class="blog-excerpt">
+                All Tiiny Host sites come with free SSL certificates. Learn why HTTPS is important for your
+                website.
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+
+    <div class="blog-card">
+        <div class="blog-image">⚡</div>
+        <div class="blog-content">
+            <div class="blog-date">November 10, 2025</div>
+            <h2 class="blog-title">Optimizing Site Performance</h2>
+            <p class="blog-excerpt">
+                Tips and tricks to make your static site load faster and provide a better user experience.
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+
+    <div class="blog-card">
+        <div class="blog-image">🌐</div>
+        <div class="blog-content">
+            <div class="blog-date">November 5, 2025</div>
+            <h2 class="blog-title">Custom Domains Guide</h2>
+            <p class="blog-excerpt">
+                Step-by-step guide to connecting your custom domain to your Tiiny Host site using CNAME records.
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+
+    <div class="blog-card">
+        <div class="blog-image">📱</div>
+        <div class="blog-content">
+            <div class="blog-date">November 1, 2025</div>
+            <h2 class="blog-title">Mobile-First Design</h2>
+            <p class="blog-excerpt">
+                Why mobile-first design matters and how to ensure your site looks great on all screen sizes.
+            </p>
+            <a href="#" class="blog-read-more">Read more →</a>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

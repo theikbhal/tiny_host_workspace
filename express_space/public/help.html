@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Tiiny Host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: opacity 0.3s;
+        }
+
+        .navbar-link:hover {
+            opacity: 0.8;
+        }
+
+        .manage-sites-btn {
+            background: white;
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.25rem;
+            margin-bottom: 4rem;
+        }
+
+        .help-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-section h2 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .help-section p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .help-section li {
+            padding: 0.5rem 0;
+            color: #374151;
+        }
+
+        .help-section li::before {
+            content: '→';
+            color: #3b82f6;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .contact-box {
+            background: #f0f7ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-box h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-box p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .contact-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .contact-btn:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <span>⚡</span>
+            tiiny.host
+        </a>
+        <div class="navbar-links">
+            <a href="/pricing.html" class="navbar-link">Pricing</a>
+            <a href="/faq.html" class="navbar-link">FAQ</a>
+            <a href="/blog.html" class="navbar-link">Blog</a>
+            <a href="/help.html" class="navbar-link">Help</a>
+            <a href="/api-docs.html" class="navbar-link">API Docs</a>
+            <a href="/dashboard.html" class="manage-sites-btn">Manage Sites</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Help Center</h1>
+        <p class="page-subtitle">Find answers and get support</p>
+
+        <div class="help-section">
+            <h2>Getting Started</h2>
+            <p>Welcome to Tiiny Host! Here's how to get your site online in minutes:</p>
+            <ul>
+                <li>Create a ZIP file containing your index.html and assets</li>
+                <li>Go to the dashboard and choose a subdomain name</li>
+                <li>Upload your ZIP file</li>
+                <li>Click Launch and your site is live!</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Common Questions</h2>
+            <ul>
+                <li>How do I update my site? Use the "Update Site" tab on the dashboard</li>
+                <li>Can I use a custom domain? Yes, available on Pro plans</li>
+                <li>What file types are supported? HTML, CSS, JavaScript, images, and other static assets</li>
+                <li>Is HTTPS included? Yes, all sites are automatically served over HTTPS</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Troubleshooting</h2>
+            <ul>
+                <li>Site not loading? Make sure your ZIP contains an index.html file</li>
+                <li>Images not showing? Check that file paths are relative, not absolute</li>
+                <li>Upload failed? Ensure your ZIP is under the size limit (100MB for free, 1GB for Pro)</li>
+            </ul>
+        </div>
+
+        <div class="help-section contact-box">
+            <h3>Still need help?</h3>
+            <p>Our support team is here to assist you</p>
+            <a href="mailto:support@tiiny.host" class="contact-btn">Contact Support</a>
+        </div>
+    </div>
+</body>
+
+</html>
