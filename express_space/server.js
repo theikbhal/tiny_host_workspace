@@ -13,8 +13,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+const authRoutes = require('./routes/auth');
+
 // Routes
 app.use('/v1', authMiddleware, apiRoutes);
+app.use('/auth', authRoutes);
 
 // Health check
 app.get('/', (req, res) => {

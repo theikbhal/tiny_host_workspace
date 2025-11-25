@@ -7,33 +7,137 @@
     <title>Login - Tiiny Host</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-toggle a {
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="login-body">
     <div class="login-container">
         <div class="login-header">
-            <h2>Login or Sign up</h2>
-            <p>Manage your uploads from your dashboard.</p>
+            <h2 id="formTitle">Login</h2>
+            <p id="formSubtitle">Manage your uploads from your dashboard.</p>
         </div>
 
-        <form class="login-form">
-            <input type="email" placeholder="Email" class="form-input">
-            <button type="button" class="btn btn-light-blue full-width">Email Me Login Link</button>
-            <a href="#" class="link-blue">Login with password</a>
+        <form class="login-form" id="authForm">
+            <div id="nameField" class="hidden">
+                <input type="text" id="fullName" placeholder="Full Name" class="form-input">
+            </div>
+            <input type="email" id="email" placeholder="Email" class="form-input" required>
+            <input type="password" id="password" placeholder="Password" class="form-input" required>
+
+            <button type="submit" class="btn btn-light-blue full-width" id="submitBtn">Login</button>
         </form>
 
-        <div class="divider">
-            <span>Or Login with</span>
-        </div>
+        <div id="message" style="margin-top: 1rem; display: none; text-align: center;"></div>
 
-        <div class="social-login">
-            <button class="social-btn"><img src="https://authjs.dev/img/providers/google.svg" alt="Google"></button>
-            <button class="social-btn"><img src="https://authjs.dev/img/providers/github.svg" alt="GitHub"></button>
-            <button class="social-btn"><img src="https://authjs.dev/img/providers/microsoft-entra-id.svg"
-                    alt="Microsoft"></button>
-            <button class="social-btn"><img src="https://authjs.dev/img/providers/yahoo.svg" alt="Yahoo"></button>
+        <div class="auth-toggle">
+            <span id="toggleText">Don't have an account?</span>
+            <a id="toggleBtn">Sign up</a>
         </div>
     </div>
+
+    <script>
+        const form = document.getElementById('authForm');
+        const title = document.getElementById('formTitle');
+        const submitBtn = document.getElementById('submitBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const toggleText = document.getElementById('toggleText');
+        const nameField = document.getElementById('nameField');
+        const msgDiv = document.getElementById('message');
+
+        let isLogin = true;
+
+        // Check if signup parameter is in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('signup') === 'true') {
+            // Auto-switch to signup mode
+            isLogin = false;
+            title.textContent = 'Create Account';
+            submitBtn.textContent = 'Sign Up';
+            toggleText.textContent = "Already have an account?";
+            toggleBtn.textContent = 'Login';
+            nameField.classList.remove('hidden');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            isLogin = !isLogin;
+            if (isLogin) {
+                title.textContent = 'Login';
+                submitBtn.textContent = 'Login';
+                toggleText.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Sign up';
+                nameField.classList.add('hidden');
+            } else {
+                title.textContent = 'Create Account';
+                submitBtn.textContent = 'Sign Up';
+                toggleText.textContent = "Already have an account?";
+                toggleBtn.textContent = 'Login';
+                nameField.classList.remove('hidden');
+            }
+            msgDiv.style.display = 'none';
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+
+            const endpoint = isLogin ? '/auth/login' : '/auth/register';
+            const body = isLogin ? { email, password } : { fullName, email, password };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            msgDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    if (isLogin) {
+                        window.location.href = '/dashboard.html';
+                    } else {
+                        msgDiv.textContent = 'Registration successful! Please login.';
+                        msgDiv.style.color = 'green';
+                        msgDiv.style.display = 'block';
+                        // Switch to login mode
+                        toggleBtn.click();
+                    }
+                } else {
+                    msgDiv.textContent = data.error || 'An error occurred';
+                    msgDiv.style.color = 'red';
+                    msgDiv.style.display = 'block';
+                }
+            } catch (err) {
+                msgDiv.textContent = 'Network error';
+                msgDiv.style.color = 'red';
+                msgDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+            }
+        });
+    </script>
 </body>
 
 </html>
