@@ -40,7 +40,47 @@ const processUploadedFile = (file, domain) => {
         // Extract ZIP file
         try {
             const zip = new AdmZip(file.path);
-            zip.extractAllTo(siteDir, true);
+            const tempExtractDir = path.join(__dirname, '..', 'uploads', 'temp', `extract-${Date.now()}`);
+
+            // Extract to temporary directory first
+            zip.extractAllTo(tempExtractDir, true);
+
+            // Check if ZIP contains a single root folder
+            const extractedItems = fs.readdirSync(tempExtractDir);
+
+            if (extractedItems.length === 1) {
+                const singleItem = path.join(tempExtractDir, extractedItems[0]);
+                const stats = fs.statSync(singleItem);
+
+                if (stats.isDirectory()) {
+                    // ZIP contains a single folder - copy its contents directly
+                    const folderContents = fs.readdirSync(singleItem);
+
+                    folderContents.forEach(item => {
+                        const srcPath = path.join(singleItem, item);
+                        const destPath = path.join(siteDir, item);
+
+                        // Move each item (file or folder) to site directory
+                        fs.renameSync(srcPath, destPath);
+                    });
+                } else {
+                    // Single file - move it directly
+                    const destPath = path.join(siteDir, extractedItems[0]);
+                    fs.renameSync(singleItem, destPath);
+                }
+            } else {
+                // Multiple items at root - move all directly
+                extractedItems.forEach(item => {
+                    const srcPath = path.join(tempExtractDir, item);
+                    const destPath = path.join(siteDir, item);
+                    fs.renameSync(srcPath, destPath);
+                });
+            }
+
+            // Clean up temporary extraction directory
+            if (fs.existsSync(tempExtractDir)) {
+                fs.rmSync(tempExtractDir, { recursive: true, force: true });
+            }
 
             // Delete the temporary ZIP file
             fs.unlinkSync(file.path);
