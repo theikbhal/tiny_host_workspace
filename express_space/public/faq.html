@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - Tiiny Host</title>
+    <title>Help - Tiiny Host</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -66,7 +66,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 4rem 2rem;
         }
@@ -86,170 +86,132 @@
             margin-bottom: 4rem;
         }
 
-        .faq-item {
+        .help-section {
             background: white;
             border-radius: 12px;
-            margin-bottom: 1rem;
-            overflow: hidden;
+            padding: 2rem;
+            margin-bottom: 2rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .faq-question {
-            padding: 1.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
+        .help-section h2 {
             color: #1f2937;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.3s;
+            margin-bottom: 1rem;
         }
 
-        .faq-question:hover {
-            background: #f9fafb;
-        }
-
-        .faq-icon {
-            font-size: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .faq-answer-content {
-            padding: 0 1.5rem 1.5rem 1.5rem;
+        .help-section p {
             color: #6b7280;
             line-height: 1.6;
+            margin-bottom: 1rem;
         }
 
-        .faq-item.active .faq-answer {
-            max-height: 500px;
+        .help-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .help-section li {
+            padding: 0.5rem 0;
+            color: #374151;
+        }
+
+        .help-section li::before {
+            content: '→';
+            color: #3b82f6;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .contact-box {
+            background: #f0f7ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-box h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-box p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .contact-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .contact-btn:hover {
+            background: #2563eb;
         }
     </style>
 </head>
 
-
-<div class="faq-list">
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>How do I upload my site?</span>
-            <span class="faq-icon">▼</span>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <span>⚡</span>
+            tiiny.host
+        </a>
+        <div class="navbar-links">
+            <a href="/pricing.html" class="navbar-link">Pricing</a>
+            <a href="/faq.html" class="navbar-link">FAQ</a>
+            <a href="/blog.html" class="navbar-link">Blog</a>
+            <a href="/help.html" class="navbar-link">Help</a>
+            <a href="/api-docs.html" class="navbar-link">API Docs</a>
+            <a href="/dashboard.html" class="manage-sites-btn">Manage Sites</a>
         </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Simply create a ZIP file containing your index.html and assets, then drag and drop it onto the
-                upload area on the dashboard. Choose your subdomain name and click Launch!
-            </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Help Center</h1>
+        <p class="page-subtitle">Find answers and get support</p>
+
+        <div class="help-section">
+            <h2>Getting Started</h2>
+            <p>Welcome to Tiiny Host! Here's how to get your site online in minutes:</p>
+            <ul>
+                <li>Create a ZIP file containing your index.html and assets</li>
+                <li>Go to the dashboard and choose a subdomain name</li>
+                <li>Upload your ZIP file</li>
+                <li>Click Launch and your site is live!</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Common Questions</h2>
+            <ul>
+                <li>How do I update my site? Use the "Update Site" tab on the dashboard</li>
+                <li>Can I use a custom domain? Yes, available on Pro plans</li>
+                <li>What file types are supported? HTML, CSS, JavaScript, images, and other static assets</li>
+                <li>Is HTTPS included? Yes, all sites are automatically served over HTTPS</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Troubleshooting</h2>
+            <ul>
+                <li>Site not loading? Make sure your ZIP contains an index.html file</li>
+                <li>Images not showing? Check that file paths are relative, not absolute</li>
+                <li>Upload failed? Ensure your ZIP is under the size limit (100MB for free, 1GB for Pro)</li>
+            </ul>
+        </div>
+
+        <div class="help-section contact-box">
+            <h3>Still need help?</h3>
+            <p>Our support team is here to assist you</p>
+            <a href="mailto:support@tiiny.host" class="contact-btn">Contact Support</a>
         </div>
     </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>How long does my site stay live?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Free sites stay live for 7 days. Pro plan sites stay live forever. You can always re-upload to
-                extend the duration.
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>Can I use a custom domain?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Yes! Custom domains are available on the Pro plan. You can point your domain to your Tiiny Host
-                site using CNAME records.
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>What file types are supported?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                We support ZIP files containing HTML, CSS, JavaScript, images, and other static assets. Your ZIP
-                should contain an index.html file as the entry point.
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>Is there a file size limit?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Free accounts have a 100MB limit per site. Pro accounts can upload up to 1GB per site.
-                Enterprise plans have unlimited storage.
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>Can I update my site after uploading?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Yes! Use the "Update Site" tab on the dashboard to upload a new version of your site to the same
-                subdomain.
-            </div>
-        </div>
-    </div>
-
-    <div class="faq-item">
-        <div class="faq-question">
-            <span>Do you support HTTPS?</span>
-            <span class="faq-icon">▼</span>
-        </div>
-        <div class="faq-answer">
-            <div class="faq-answer-content">
-                Yes! All sites are automatically served over HTTPS with free SSL certificates.
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-
-<script>
-    const faqItems = document.querySelectorAll('.faq-item');
-
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
-
-        question.addEventListener('click', () => {
-            const isActive = item.classList.contains('active');
-
-            // Close all items
-            faqItems.forEach(i => i.classList.remove('active'));
-
-            // Open clicked item if it wasn't active
-            if (!isActive) {
-                item.classList.add('active');
-            }
-        });
-    });
-</script>
 </body>
 
 </html>

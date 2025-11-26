@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sites - tiiny.host</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #6b46c1;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .navbar-link:hover {
+            color: #6b46c1;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .manage-account-btn {
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn {
+            background: white;
+            color: #6b46c1;
+            border: 2px solid #6b46c1;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #6b46c1;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #1a202c;
+        }
+
+        .upload-btn {
+            background: #6b46c1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn:hover {
+            background: #553c9a;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 0;
+            background: none;
+            border: none;
+            color: #718096;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .sites-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .empty-state {
+            color: #a0aec0;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-upload-btn {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .site-count {
+            text-align: right;
+            color: #a0aec0;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .custom-domains-section {
+            margin-top: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: #1a202c;
+        }
+
+        .add-btn {
+            background: white;
+            color: #6b46c1;
+            border: 2px solid #6b46c1;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .add-btn:hover {
+            background: #6b46c1;
+            color: white;
+        }
+
+        .custom-domains-content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .footer-link {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #718096;
+        }
+
+        .footer-link a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">
+                <span>⚡</span>
+                tiiny.host
+            </a>
+            <div class="navbar-links">
+                <a href="/help.html" class="navbar-link">Live chat</a>
+                <a href="/api-docs.html" class="navbar-link">Documentation</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="#" class="manage-account-btn">Manage account</a>
+            <a href="/login.html" class="logout-btn">Log out</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">My Sites</h1>
+            <a href="/dashboard.html" class="upload-btn">
+                <span>☁</span>
+                UPLOAD
+            </a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active">Live</button>
+            <button class="tab">Archive</button>
+        </div>
+
+        <div class="sites-section">
+            <div class="empty-icon">🌐</div>
+            <div class="empty-state">No live sites</div>
+            <button class="empty-upload-btn" onclick="window.location.href='/dashboard.html'">Upload</button>
+            <div class="site-count">0 / 5 live sites</div>
+        </div>
+
+        <div class="custom-domains-section">
+            <div class="section-header">
+                <h2 class="section-title">Custom Domains</h2>
+                <button class="add-btn">Add</button>
+            </div>
+            <div class="custom-domains-content">
+                <div class="empty-state">No custom domains</div>
+                <div class="site-count">0 / 5 custom domains</div>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            Issues? - <a href="/help.html">Contact us</a>
+        </div>
+    </div>
+</body>
+
+</html>

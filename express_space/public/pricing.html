@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing - Tiiny Host</title>
+    <title>Help - Tiiny Host</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -66,7 +66,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 4rem 2rem;
         }
@@ -86,137 +86,132 @@
             margin-bottom: 4rem;
         }
 
-        .pricing-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .pricing-card {
+        .help-section {
             background: white;
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .pricing-card.featured {
-            border: 3px solid #3b82f6;
-            transform: scale(1.05);
-        }
-
-        .plan-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .help-section h2 {
             color: #1f2937;
+            margin-bottom: 1rem;
         }
 
-        .plan-price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #3b82f6;
-            margin-bottom: 0.5rem;
-        }
-
-        .plan-duration {
+        .help-section p {
             color: #6b7280;
-            margin-bottom: 2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
         }
 
-        .plan-features {
+        .help-section ul {
             list-style: none;
-            margin-bottom: 2rem;
+            padding-left: 0;
         }
 
-        .plan-features li {
+        .help-section li {
             padding: 0.5rem 0;
             color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .plan-features li::before {
-            content: '✓';
-            color: #10b981;
+        .help-section li::before {
+            content: '→';
+            color: #3b82f6;
             font-weight: 700;
+            margin-right: 0.5rem;
         }
 
-        .plan-btn {
-            width: 100%;
-            padding: 1rem;
+        .contact-box {
+            background: #f0f7ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-box h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-box p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .contact-btn {
             background: #3b82f6;
             color: white;
-            border: none;
+            padding: 0.75rem 2rem;
             border-radius: 8px;
-            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
             font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
         }
 
-        .plan-btn:hover {
+        .contact-btn:hover {
             background: #2563eb;
-        }
-
-        .plan-btn.secondary {
-            background: white;
-            color: #3b82f6;
-            border: 2px solid #3b82f6;
-        }
-
-        .plan-btn.secondary:hover {
-            background: #f0f7ff;
         }
     </style>
 </head>
 
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <span>⚡</span>
+            tiiny.host
+        </a>
+        <div class="navbar-links">
+            <a href="/pricing.html" class="navbar-link">Pricing</a>
+            <a href="/faq.html" class="navbar-link">FAQ</a>
+            <a href="/blog.html" class="navbar-link">Blog</a>
+            <a href="/help.html" class="navbar-link">Help</a>
+            <a href="/api-docs.html" class="navbar-link">API Docs</a>
+            <a href="/dashboard.html" class="manage-sites-btn">Manage Sites</a>
+        </div>
+    </nav>
 
-<div class="pricing-cards">
-    <div class="pricing-card">
-        <h2 class="plan-name">Free</h2>
-        <div class="plan-price">$0</div>
-        <div class="plan-duration">Forever</div>
-        <ul class="plan-features">
-            <li>7 days site hosting</li>
-            <li>Unlimited sites</li>
-            <li>100MB per site</li>
-            <li>Basic support</li>
-        </ul>
-        <button class="plan-btn secondary" onclick="window.location.href='/dashboard.html'">Get Started</button>
-    </div>
+    <div class="container">
+        <h1 class="page-title">Help Center</h1>
+        <p class="page-subtitle">Find answers and get support</p>
 
-    <div class="pricing-card featured">
-        <h2 class="plan-name">Pro</h2>
-        <div class="plan-price">$9</div>
-        <div class="plan-duration">per month</div>
-        <ul class="plan-features">
-            <li>Forever hosting</li>
-            <li>Unlimited sites</li>
-            <li>1GB per site</li>
-            <li>Custom domains</li>
-            <li>Priority support</li>
-            <li>No ads</li>
-        </ul>
-        <button class="plan-btn">Upgrade to Pro</button>
-    </div>
+        <div class="help-section">
+            <h2>Getting Started</h2>
+            <p>Welcome to Tiiny Host! Here's how to get your site online in minutes:</p>
+            <ul>
+                <li>Create a ZIP file containing your index.html and assets</li>
+                <li>Go to the dashboard and choose a subdomain name</li>
+                <li>Upload your ZIP file</li>
+                <li>Click Launch and your site is live!</li>
+            </ul>
+        </div>
 
-    <div class="pricing-card">
-        <h2 class="plan-name">Enterprise</h2>
-        <div class="plan-price">Custom</div>
-        <div class="plan-duration">Contact us</div>
-        <ul class="plan-features">
-            <li>Everything in Pro</li>
-            <li>Unlimited storage</li>
-            <li>Dedicated support</li>
-            <li>SLA guarantee</li>
-            <li>Custom features</li>
-        </ul>
-        <button class="plan-btn secondary">Contact Sales</button>
+        <div class="help-section">
+            <h2>Common Questions</h2>
+            <ul>
+                <li>How do I update my site? Use the "Update Site" tab on the dashboard</li>
+                <li>Can I use a custom domain? Yes, available on Pro plans</li>
+                <li>What file types are supported? HTML, CSS, JavaScript, images, and other static assets</li>
+                <li>Is HTTPS included? Yes, all sites are automatically served over HTTPS</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Troubleshooting</h2>
+            <ul>
+                <li>Site not loading? Make sure your ZIP contains an index.html file</li>
+                <li>Images not showing? Check that file paths are relative, not absolute</li>
+                <li>Upload failed? Ensure your ZIP is under the size limit (100MB for free, 1GB for Pro)</li>
+            </ul>
+        </div>
+
+        <div class="help-section contact-box">
+            <h3>Still need help?</h3>
+            <p>Our support team is here to assist you</p>
+            <a href="mailto:support@tiiny.host" class="contact-btn">Contact Support</a>
+        </div>
     </div>
-</div>
-</div>
 </body>
 
 </html>

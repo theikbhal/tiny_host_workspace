@@ -4,30 +4,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiiny Host - Static Web Hosting</title>
-    <link rel="stylesheet" href="style.css">
+    <title>tiiny.host - The simplest way to host & share your web project</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #6b46c1;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .navbar-link:hover {
+            color: #6b46c1;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .login-btn {
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .signup-btn {
+            background: white;
+            color: #6b46c1;
+            border: 2px solid #6b46c1;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .signup-btn:hover {
+            background: #6b46c1;
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            color: #718096;
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .domain-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .domain-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .domain-suffix {
+            padding: 0.75rem 1rem;
+            background: #007bff;
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #718096;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area:hover {
+            border-color: #007bff;
+            background: #f7fafc;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #a0aec0;
+        }
+
+        .upload-text {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: #a0aec0;
+            font-size: 0.875rem;
+        }
+
+        .upload-btn {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .template-link {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 1.5rem;
+        }
+
+        .template-link a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .launch-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .launch-btn:hover {
+            background: #0056b3;
+        }
+
+        .testimonial {
+            max-width: 300px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: #fffbeb;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #78350f;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            margin-top: 0.5rem;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
     <nav class="navbar">
-        <div class="nav-left">
-            <a href="/" class="logo">
-                <span class="logo-icon">⚡</span> tiiny.host
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">
+                <span>⚡</span>
+                tiiny.host
             </a>
+            <div class="navbar-links">
+                <a href="/blog.html" class="navbar-link">Blog</a>
+                <a href="/faq.html" class="navbar-link">FAQ</a>
+                <a href="/pricing.html" class="navbar-link">Pricing</a>
+            </div>
         </div>
-        <div class="nav-right">
-            <a href="/login.html" class="btn btn-black">Log in</a>
-            <a href="/login.html?signup=true" class="btn btn-purple">Sign up free →</a>
+        <div class="navbar-right">
+            <a href="/login.html" class="login-btn">Log in</a>
+            <a href="/login.html" class="signup-btn">Sign Up Free</a>
         </div>
     </nav>
 
-    <main class="hero">
-        <div class="hero-content">
-            <h1>The simplest way to host & share your web project</h1>
-            <p>Drag & drop to upload your site in seconds.</p>
+    <div class="hero">
+        <h1>The simplest way to host &<br>share your web project</h1>
+        <p class="hero-subtitle">🌷 Used by thousands across the web</p>
+
+        <div class="upload-card">
+            <div class="domain-input-group">
+                <input type="text" id="domainInput" class="domain-input" placeholder="link-name">
+                <span class="domain-suffix">.tiinysite ▼</span>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active">HTML</button>
+                <button class="tab">PDF</button>
+                <button class="tab">Templates</button>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁 📄</div>
+                <div class="upload-text">Drag & drop zip or single file here</div>
+                <div class="upload-subtext">Or</div>
+            </div>
+
+            <input type="file" id="fileInput" accept=".zip,.html,.htm">
+            <button class="upload-btn" id="uploadBtn">Upload file</button>
+
+            <div class="template-link">
+                Or <a href="#" id="templateLink">use our template</a>
+            </div>
+
+            <button class="launch-btn" id="launchBtn">Upload</button>
         </div>
-    </main>
+
+        <div class="testimonial">
+            "perfect for sharing quick web updates with clients. it's just a simple, hassle-free way to host
+            prototypes."
+            <div class="testimonial-author">- Phil Delvecchio, Hayday Group</div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const launchBtn = document.getElementById('launchBtn');
+        const domainInput = document.getElementById('domainInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                uploadArea.innerHTML = `<div class="upload-icon">📦</div><div class="upload-text">${file.name}</div>`;
+
+                if (!domainInput.value) {
+                    const name = file.name.split('.')[0];
+                    domainInput.value = name.replace(/[^a-zA-Z0-9_-]/g, '');
+                }
+            }
+        });
+
+        launchBtn.addEventListener('click', () => {
+            // Redirect to login/dashboard
+            window.location.href = '/login.html';
+        });
+
+        document.getElementById('templateLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Template feature coming soon!');
+        });
+    </script>
 </body>
 
 </html>
