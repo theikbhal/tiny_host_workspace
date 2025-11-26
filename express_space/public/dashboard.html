@@ -7,10 +7,82 @@
     <title>Dashboard - Tiiny Host</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        max-width: 440px;
-        width: 100%;
-        overflow: hidden;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+        }
+
+        .signout-btn {
+            padding: 0.5rem 1.5rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .signout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Main content wrapper */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 20px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 440px;
+            width: 100%;
+            overflow: hidden;
         }
 
         .tabs {
@@ -312,43 +384,55 @@
 </head>
 
 <body>
-    <div class="modal-container">
-        <div class="tabs">
-            <button class="tab active" data-tab="create">Create Site</button>
-            <button class="tab" data-tab="update">Update Site</button>
-        </div>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="brand">
+            <span class="brand-icon">⚡</span>
+            <span>host.naml.in</span>
+        </a>
+        <button class="signout-btn" id="signoutBtn">Sign Out</button>
+    </header>
 
-        <div class="tab-content">
-            <div class="domain-input-group">
-                <label class="domain-label">Domain</label>
-                <div class="domain-input-wrapper">
-                    <input type="text" id="domainInput" class="domain-input" placeholder="mydomain"
-                        pattern="[a-zA-Z0-9_-]+">
-                    <span class="domain-suffix">host.naml.in</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="modal-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="create">Create Site</button>
+                <button class="tab" data-tab="update">Update Site</button>
+            </div>
+
+            <div class="tab-content">
+                <div class="domain-input-group">
+                    <label class="domain-label">Domain</label>
+                    <div class="domain-input-wrapper">
+                        <input type="text" id="domainInput" class="domain-input" placeholder="mydomain"
+                            pattern="[a-zA-Z0-9_-]+">
+                        <span class="domain-suffix">host.naml.in</span>
+                    </div>
                 </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Drag & drop zip file here</div>
+                    <div class="upload-subtext">(index.html & assets)</div>
+                </div>
+
+                <div class="file-selected" id="fileSelected">
+                    <span class="file-icon">📦</span>
+                    <span class="file-name" id="fileName"></span>
+                    <button class="file-remove" id="fileRemove">✕</button>
+                </div>
+
+                <input type="file" id="fileInput" accept=".zip,.html,.htm">
+
+                <button class="upload-zip-btn" id="uploadZipBtn">Upload ZIP</button>
+
+                <div class="template-link">
+                    Or <a href="#" id="templateLink">use our template</a>
+                </div>
+
+                <button class="launch-btn" id="launchBtn" disabled>Launch</button>
             </div>
-
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">Drag & drop zip file here</div>
-                <div class="upload-subtext">(index.html & assets)</div>
-            </div>
-
-            <div class="file-selected" id="fileSelected">
-                <span class="file-icon">📦</span>
-                <span class="file-name" id="fileName"></span>
-                <button class="file-remove" id="fileRemove">✕</button>
-            </div>
-
-            <input type="file" id="fileInput" accept=".zip,.html,.htm">
-
-            <button class="upload-zip-btn" id="uploadZipBtn">Upload ZIP</button>
-
-            <div class="template-link">
-                Or <a href="#" id="templateLink">use our template</a>
-            </div>
-
-            <button class="launch-btn" id="launchBtn" disabled>Launch</button>
         </div>
     </div>
 
@@ -380,10 +464,22 @@
         const viewSiteBtn = document.getElementById('viewSiteBtn');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
         const tabs = document.querySelectorAll('.tab');
+        const signoutBtn = document.getElementById('signoutBtn');
 
         const API_KEY = 'test-key';
         let selectedFile = null;
         let uploadedLink = '';
+
+        // Sign out functionality
+        signoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                // Clear any stored session data
+                localStorage.removeItem('userEmail');
+                sessionStorage.clear();
+                // Redirect to home page
+                window.location.href = '/';
+            }
+        });
 
         // Tab switching
         tabs.forEach(tab => {
