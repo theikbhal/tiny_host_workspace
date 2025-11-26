@@ -10,8 +10,9 @@ const bcrypt = require('bcrypt');
 // ✅ Base domain for hosted sites
 const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'site.naml.in';
 
-// Path to users JSON file
+// Path to JSON files
 const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json');
+const SITES_FILE = path.join(__dirname, '..', 'data', 'sites.json');
 
 // Helper function to ensure directory exists
 const ensureDir = (dirPath) => {
@@ -46,6 +47,36 @@ const writeUsers = (users) => {
         console.error('Error writing users file:', error);
         return false;
     }
+};
+
+// Helper functions for site management
+const readSites = () => {
+    try {
+        if (!fs.existsSync(SITES_FILE)) {
+            fs.writeFileSync(SITES_FILE, JSON.stringify([], null, 2));
+            return [];
+        }
+        const data = fs.readFileSync(SITES_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Error reading sites file:', error);
+        return [];
+    }
+};
+
+const writeSites = (sites) => {
+    try {
+        fs.writeFileSync(SITES_FILE, JSON.stringify(sites, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error writing sites file:', error);
+        return false;
+    }
+};
+
+const findSitesByUserId = (userId) => {
+    const sites = readSites();
+    return sites.filter(site => site.userId === userId);
 };
 
 const findUserByEmail = (email) => {
@@ -349,13 +380,19 @@ ensureDir(path.join(__dirname, '..', 'uploads', 'temp'));
 
 // POST /v1/upload - Create Project
 router.post('/upload', upload.single('files'), (req, res) => {
-    const { siteSettings, domain } = req.body;
+    const { siteSettings, domain, userId } = req.body;
     const file = req.file;
 
     if (!file) {
         return res
             .status(400)
             .json({ success: false, error: 'No file uploaded' });
+    }
+
+    if (!userId) {
+        return res
+            .status(400)
+            .json({ success: false, error: 'User ID is required' });
     }
 
     const projectId = domain || uuidv4();
@@ -370,6 +407,7 @@ router.post('/upload', upload.single('files'), (req, res) => {
             .json({ success: false, error: result.error });
     }
 
+    // Save to in-memory projects
     projects[projectId] = {
         id: projectId,
         link: link,
@@ -378,6 +416,21 @@ router.post('/upload', upload.single('files'), (req, res) => {
         settings: siteSettings ? JSON.parse(siteSettings) : {},
         createdAt: new Date(),
     };
+
+    // Save to sites.json with user association
+    const sites = readSites();
+    const newSite = {
+        id: projectId,
+        userId: userId,
+        domain: projectId,
+        link: link,
+        status: 'active',
+        fileType: result.type,
+        settings: siteSettings ? JSON.parse(siteSettings) : {},
+        createdAt: new Date().toISOString(),
+    };
+    sites.push(newSite);
+    writeSites(sites);
 
     res.json({
         success: true,
@@ -490,6 +543,34 @@ router.get('/profile', (req, res) => {
             quotaLimit: 1024,
         },
     });
+});
+
+// GET /auth/sites/:userId - Get user's sites
+router.get('/sites/:userId', (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                error: 'User ID is required'
+            });
+        }
+
+        const userSites = findSitesByUserId(userId);
+
+        res.json({
+            success: true,
+            sites: userSites
+        });
+
+    } catch (error) {
+        console.error('Get sites error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
 });
 
 module.exports = router;
