@@ -17,8 +17,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Apply subdomain extraction middleware globally
 app.use(subdomainMiddleware);
 
-// Static files (for login, dashboard, etc.)
-app.use(express.static('public'));
 
 const authRoutes = require('./routes/auth');
 
@@ -28,6 +26,10 @@ app.use('/auth', authRoutes);
 
 // Site rendering routes (must be after other routes to avoid conflicts)
 app.use(siteRoutes);
+
+// Static files (for login, dashboard, etc.)
+app.use(express.static('public'));
+
 
 // Health check
 app.get('/', (req, res) => {
