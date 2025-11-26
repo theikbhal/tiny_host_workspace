@@ -1,0 +1,6 @@
+tiiny host express nginx
+site.naml.inhost.naml.in
+*.site.naml.in
+
+
+https://www.notion.so/devops-tiny-host-2b744e8e434480abb969f7be7de9f538?source=copy_link
