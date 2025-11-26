@@ -5,7 +5,7 @@ Delete a project from Tiiny Host.
 ## Request
 
 **Method**: `DELETE`
-**URL**: `https://ext.tiiny.host/v1/delete`
+**URL**: `https://ext.host.naml.in/v1/delete`
 
 ### Headers
 
@@ -22,7 +22,7 @@ Delete a project from Tiiny Host.
 ### Example Request
 
 ```bash
-curl --location --request DELETE 'https://ext.tiiny.host/v1/delete' \
+curl --location --request DELETE 'https://ext.host.naml.in/v1/delete' \
 --header 'x-api-key: YOUR_API_KEY' \
 --form 'domain="abc.tiiny.site"'
 ```

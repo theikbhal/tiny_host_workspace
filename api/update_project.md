@@ -5,7 +5,7 @@ Update an existing project on Tiiny Host.
 ## Request
 
 **Method**: `PUT`
-**URL**: `https://ext.tiiny.host/v1/upload`
+**URL**: `https://ext.host.naml.in/v1/upload`
 
 ### Headers
 
@@ -24,7 +24,7 @@ Update an existing project on Tiiny Host.
 ### Example Request
 
 ```bash
-curl --location --request PUT 'https://ext.tiiny.host/v1/upload' \
+curl --location --request PUT 'https://ext.host.naml.in/v1/upload' \
 --header 'x-api-key: YOUR_API_KEY' \
 --form 'files="/path/to/file.zip"' \
 --form 'siteSettings="{ \"password\": \"he!!ow0rld\", \"passwordProtected\": true }"' \

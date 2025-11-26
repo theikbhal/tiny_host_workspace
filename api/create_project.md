@@ -5,7 +5,7 @@ Upload a new project to Tiiny Host.
 ## Request
 
 **Method**: `POST`
-**URL**: `https://ext.tiiny.host/v1/upload`
+**URL**: `https://ext.host.naml.in/v1/upload`
 
 ### Headers
 
@@ -24,7 +24,7 @@ Upload a new project to Tiiny Host.
 ### Example Request
 
 ```bash
-curl --location --request POST 'https://ext.tiiny.host/v1/upload' \
+curl --location --request POST 'https://ext.host.naml.in/v1/upload' \
 --header 'x-api-key: YOUR_API_KEY' \
 --form 'files="/path/to/file.zip"' \
 --form 'siteSettings="{ \"password\": \"he!!ow0rld\", \"passwordProtected\": true }"' \

@@ -5,7 +5,7 @@ Retrieve your Tiiny Host profile information, including quota usage.
 ## Request
 
 **Method**: `GET`
-**URL**: `https://ext.tiiny.host/v1/profile`
+**URL**: `https://ext.host.naml.in/v1/profile`
 
 ### Headers
 
@@ -16,7 +16,7 @@ Retrieve your Tiiny Host profile information, including quota usage.
 ### Example Request
 
 ```bash
-curl --location --request GET 'https://ext.tiiny.host/v1/profile' \
+curl --location --request GET 'https://ext.host.naml.in/v1/profile' \
 --header 'x-api-key: YOUR_API_KEY'
 ```
 
