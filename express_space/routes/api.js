@@ -7,7 +7,7 @@ const fs = require('fs');
 const AdmZip = require('adm-zip');
 
 // Base domain for hosted sites
-const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'simplhost.naml.in';
+const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'simplhost.com';
 const SITES_FILE = path.join(__dirname, '..', 'data', 'sites.json');
 
 // Configure multer for file uploads (temporary storage)

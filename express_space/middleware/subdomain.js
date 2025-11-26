@@ -12,7 +12,7 @@ const extractSubdomain = (req, res, next) => {
     const host = req.get('host') || '';
     const hostname = host.split(':')[0];
 
-    // ✅ Production: *.simplhost.naml.in
+    // ✅ Production: *.simplhost.com
     if (hostname.endsWith('.simplhost.com')) {
         const parts = hostname.split('.');
         if (parts.length >= 4) {
