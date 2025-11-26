@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Sites - host.naml.in</title>
+    <title>Manage Sites - SimplHost</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -32,6 +32,12 @@
             z-index: 100;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
         .brand {
             display: flex;
             align-items: center;
@@ -44,6 +50,31 @@
 
         .brand-icon {
             font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .nav-link.active {
+            background: #e0e7ff;
+            color: #4338ca;
         }
 
         .header-right {
@@ -60,23 +91,17 @@
             font-weight: 600;
             padding: 0.5rem 1.25rem;
             border-radius: 9999px;
-            /* Pill shape */
             transition: all 0.3s;
             background: #f3f4f6;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
         }
 
         .nav-pill:hover {
             background: #e5e7eb;
             color: #1f2937;
-        }
-
-        .nav-pill.primary {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .nav-pill.primary:hover {
-            background: #2563eb;
         }
 
         .nav-pill.danger {
@@ -255,13 +280,19 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <a href="/" class="brand">
-            <span class="brand-icon">⚡</span>
-            <span>host.naml.in</span>
-        </a>
+        <div class="header-left">
+            <a href="/" class="brand">
+                <span class="brand-icon">⚡</span>
+                <span>SimplHost</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/manage-sites.html" class="nav-link active">Manage Sites</a>
+                <a href="/api-keys.html" class="nav-link">API Keys</a>
+            </nav>
+        </div>
         <div class="header-right">
-            <a href="/dashboard.html" class="nav-pill">Dashboard</a>
-            <button class="nav-pill danger" id="signoutBtn" style="border:none; cursor:pointer;">Sign Out</button>
+            <button class="nav-pill danger" id="signoutBtn">Sign Out</button>
         </div>
     </header>
 

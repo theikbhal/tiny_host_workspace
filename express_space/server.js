@@ -21,7 +21,7 @@ app.use(subdomainMiddleware);
 const authRoutes = require('./routes/auth');
 
 // Routes
-app.use('/v1', authMiddleware, apiRoutes);
+app.use('/v1', apiRoutes);
 app.use('/auth', authRoutes);
 
 // Site rendering routes (must be after other routes to avoid conflicts)

@@ -1,313 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
+<div class="success-message" id="successMessage"></div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - host.naml.in</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .register-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 420px;
-            width: 100%;
-            padding: 3rem 2.5rem;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            text-decoration: none;
-            color: #1f2937;
-        }
-
-        .brand-icon {
-            font-size: 2rem;
-        }
-
-        .brand-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 2rem;
-            font-size: 0.875rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        .error-message {
-            display: none;
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .success-message {
-            display: none;
-            background: #d1fae5;
-            color: #059669;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .register-btn {
-            width: 100%;
-            padding: 0.875rem;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-bottom: 1rem;
-        }
-
-        .register-btn:hover:not(:disabled) {
-            background: #2563eb;
-        }
-
-        .register-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        .divider {
-            text-align: center;
-            margin: 1.5rem 0;
-            color: #9ca3af;
-            font-size: 0.875rem;
-            position: relative;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: #e5e7eb;
-        }
-
-        .divider::before {
-            left: 0;
-        }
-
-        .divider::after {
-            right: 0;
-        }
-
-        .login-link {
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-
-        .login-link a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-
-        .password-hint {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="register-container">
-        <a href="/" class="brand">
-            <span class="brand-icon">⚡</span>
-            <span class="brand-text">host.naml.in</span>
-        </a>
-
-        <h1>Create Account</h1>
-        <p class="subtitle">Get started with your free account</p>
-
-        <div class="error-message" id="errorMessage"></div>
-        <div class="success-message" id="successMessage"></div>
-
-        <form id="registerForm">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" placeholder="John Doe">
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="you@example.com">
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Create a password">
-                <div class="password-hint">Must be at least 6 characters</div>
-            </div>
-
-            <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
-        </form>
-
-        <div class="divider">OR</div>
-
-        <div class="login-link">
-            Already have an account? <a href="/login.html">Sign in</a>
-        </div>
+<form id="registerForm">
+    <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" placeholder="John Doe">
     </div>
 
-    <script>
-        const registerForm = document.getElementById('registerForm');
-        const registerBtn = document.getElementById('registerBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+    </div>
 
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.classList.add('show');
-            successMessage.classList.remove('show');
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Create a password">
+        <div class="password-hint">Must be at least 6 characters</div>
+    </div>
+
+    <button type="submit" class="register-btn" id="registerBtn">Create Account</button>
+</form>
+
+<div class="divider">OR</div>
+
+<div class="login-link">
+    Already have an account? <a href="/login.html">Sign in</a>
+</div>
+</div>
+
+<script>
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add('show');
+        successMessage.classList.remove('show');
+    }
+
+    function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.classList.add('show');
+        errorMessage.classList.remove('show');
+    }
+
+    function hideMessages() {
+        errorMessage.classList.remove('show');
+        successMessage.classList.remove('show');
+    }
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideMessages();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Client-side validation
+        if (password.length < 6) {
+            showError('Password must be at least 6 characters long');
+            return;
         }
 
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.classList.add('show');
-            errorMessage.classList.remove('show');
-        }
+        registerBtn.disabled = true;
+        registerBtn.textContent = 'Creating account...';
 
-        function hideMessages() {
-            errorMessage.classList.remove('show');
-            successMessage.classList.remove('show');
-        }
+        try {
+            const response = await fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            });
 
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideMessages();
+            const data = await response.json();
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            if (data.success) {
+                showSuccess('Account created successfully! Redirecting to login...');
 
-            // Client-side validation
-            if (password.length < 6) {
-                showError('Password must be at least 6 characters long');
-                return;
-            }
-
-            registerBtn.disabled = true;
-            registerBtn.textContent = 'Creating account...';
-
-            try {
-                const response = await fetch('/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name, email, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess('Account created successfully! Redirecting to login...');
-
-                    // Redirect to login page after a short delay
-                    setTimeout(() => {
-                        window.location.href = '/login.html';
-                    }, 1500);
-                } else {
-                    showError(data.error || 'Registration failed');
-                    registerBtn.disabled = false;
-                    registerBtn.textContent = 'Create Account';
-                }
-            } catch (error) {
-                showError('An error occurred. Please try again.');
+                // Redirect to login page after a short delay
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 1500);
+            } else {
+                showError(data.error || 'Registration failed');
                 registerBtn.disabled = false;
                 registerBtn.textContent = 'Create Account';
             }
-        });
-    </script>
+        } catch (error) {
+            showError('An error occurred. Please try again.');
+            registerBtn.disabled = false;
+            registerBtn.textContent = 'Create Account';
+        }
+    });
+</script>
 </body>
 
 </html>

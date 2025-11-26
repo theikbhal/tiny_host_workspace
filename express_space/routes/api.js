@@ -6,6 +6,10 @@ const path = require('path');
 const fs = require('fs');
 const AdmZip = require('adm-zip');
 
+// Base domain for hosted sites
+const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'simplhost.naml.in';
+const SITES_FILE = path.join(__dirname, '..', 'data', 'sites.json');
+
 // Configure multer for file uploads (temporary storage)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,15 +23,48 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Mock data store
-const projects = {};
-
 // Helper function to ensure directory exists
 const ensureDir = (dirPath) => {
     if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
     }
 };
+
+// Ensure data directory exists
+ensureDir(path.join(__dirname, '..', 'data'));
+ensureDir(path.join(__dirname, '..', 'uploads', 'temp'));
+
+// Helper functions for site management
+const readSites = () => {
+    try {
+        if (!fs.existsSync(SITES_FILE)) {
+            fs.writeFileSync(SITES_FILE, JSON.stringify([], null, 2));
+            return [];
+        }
+        const data = fs.readFileSync(SITES_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Error reading sites file:', error);
+        return [];
+    }
+};
+
+const writeSites = (sites) => {
+    try {
+        fs.writeFileSync(SITES_FILE, JSON.stringify(sites, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error writing sites file:', error);
+        return false;
+    }
+};
+
+// Helper to build production URL
+function buildSiteUrl(projectId, req) {
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = `${projectId}.${BASE_SITE_DOMAIN}`;
+    return `${proto}://${host}`;
+}
 
 // Helper function to process uploaded file
 const processUploadedFile = (file, domain) => {
@@ -104,20 +141,19 @@ const processUploadedFile = (file, domain) => {
     }
 };
 
-// Ensure temp directory exists
-ensureDir(path.join(__dirname, '..', 'uploads', 'temp'));
-
 // POST /v1/upload - Create Project
 router.post('/upload', upload.single('files'), (req, res) => {
-    const { siteSettings, domain } = req.body;
+    const { siteSettings, domain, userId } = req.body;
     const file = req.file;
 
     if (!file) {
         return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
+    // Note: userId is optional for anonymous uploads, but required for user association
+
     const projectId = domain || uuidv4();
-    const link = `${projectId}.tiiny.site`;
+    const link = buildSiteUrl(projectId, req);
 
     // Process the uploaded file
     const result = processUploadedFile(file, projectId);
@@ -126,14 +162,21 @@ router.post('/upload', upload.single('files'), (req, res) => {
         return res.status(500).json({ success: false, error: result.error });
     }
 
-    projects[projectId] = {
+    // Save to sites.json
+    const sites = readSites();
+    const newSite = {
         id: projectId,
+        userId: userId || null, // Store userId if provided
+        domain: projectId,
         link: link,
         status: 'active',
         fileType: result.type,
         settings: siteSettings ? JSON.parse(siteSettings) : {},
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
     };
+
+    sites.push(newSite);
+    writeSites(sites);
 
     res.json({
         success: true,
@@ -158,7 +201,8 @@ router.put('/upload', upload.single('files'), (req, res) => {
     }
 
     const projectId = domain;
-    const link = `${projectId}.tiiny.site`;
+    const link = buildSiteUrl(projectId, req);
+    let fileType = null;
 
     // Process the uploaded file if provided
     if (file) {
@@ -167,26 +211,23 @@ router.put('/upload', upload.single('files'), (req, res) => {
         if (!result.success) {
             return res.status(500).json({ success: false, error: result.error });
         }
+        fileType = result.type;
+    }
 
-        projects[projectId] = {
-            ...projects[projectId],
-            id: projectId,
+    // Update sites.json
+    const sites = readSites();
+    const siteIndex = sites.findIndex(s => s.domain === projectId);
+
+    if (siteIndex !== -1) {
+        sites[siteIndex] = {
+            ...sites[siteIndex],
             link: link,
             status: 'active',
-            fileType: result.type,
-            settings: siteSettings ? JSON.parse(siteSettings) : (projects[projectId]?.settings || {}),
-            updatedAt: new Date()
+            fileType: fileType || sites[siteIndex].fileType,
+            settings: siteSettings ? JSON.parse(siteSettings) : (sites[siteIndex].settings || {}),
+            updatedAt: new Date().toISOString()
         };
-    } else {
-        // Update settings only
-        projects[projectId] = {
-            ...projects[projectId],
-            id: projectId,
-            link: link,
-            status: 'active',
-            settings: siteSettings ? JSON.parse(siteSettings) : (projects[projectId]?.settings || {}),
-            updatedAt: new Date()
-        };
+        writeSites(sites);
     }
 
     res.json({
@@ -210,16 +251,17 @@ router.delete('/delete', upload.none(), (req, res) => {
         return res.status(400).json({ success: false, error: 'Domain is required' });
     }
 
-    // Mock deletion
-    delete projects[domain];
+    // Remove from sites.json
+    const sites = readSites();
+    const filteredSites = sites.filter(s => s.domain !== domain);
+    writeSites(filteredSites);
+
+    const deletedUrl = `https://${domain}.${BASE_SITE_DOMAIN}`;
 
     res.json({
         success: true,
         data: {
-            links: [
-                `${domain}.tiiny.site`,
-                `${domain}.myblog.info`
-            ],
+            links: [deletedUrl],
             quotaUsed: 5,
             quotaLimit: 1024
         }
@@ -228,10 +270,11 @@ router.delete('/delete', upload.none(), (req, res) => {
 
 // GET /v1/profile - Fetch Profile
 router.get('/profile', (req, res) => {
+    const sites = readSites();
     res.json({
         success: true,
         data: {
-            links: Object.values(projects).map(p => p.link),
+            links: sites.map(p => p.link),
             quotaUsed: 5,
             quotaLimit: 1024
         }

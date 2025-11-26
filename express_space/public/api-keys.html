@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys - SimplHost</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .nav-link.active {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Pill Styles for Links */
+        .nav-pill {
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            transition: all 0.3s;
+            background: #f3f4f6;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-pill:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .nav-pill.danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .nav-pill.danger:hover {
+            background: #fecaca;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* Create Key Section */
+        .create-key-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .create-key-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .create-btn {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .create-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Keys List */
+        .keys-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .key-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .key-item:last-child {
+            border-bottom: none;
+        }
+
+        .key-info {
+            flex: 1;
+        }
+
+        .key-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .key-value-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .key-value {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #4b5563;
+        }
+
+        .key-created {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+        }
+
+        /* Modal for New Key */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #111827;
+        }
+
+        .modal-text {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+
+        .new-key-display {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.125rem;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            word-break: break-all;
+            border: 1px solid #e5e7eb;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn:hover {
+            background: #2563eb;
+        }
+
+        .copy-feedback {
+            color: #059669;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="/" class="brand">
+                <span class="brand-icon">⚡</span>
+                <span>SimplHost</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/manage-sites.html" class="nav-link">Manage Sites</a>
+                <a href="/api-keys.html" class="nav-link active">API Keys</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <button class="nav-pill danger" id="signoutBtn">Sign Out</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div>
+            <h1>API Keys</h1>
+            <p class="subtitle">Manage your API keys for external integrations</p>
+        </div>
+
+        <div class="create-key-card">
+            <form id="createKeyForm" class="create-key-form">
+                <div class="form-group">
+                    <label class="form-label" for="keyName">Key Name</label>
+                    <input type="text" id="keyName" class="form-input" placeholder="e.g. Zapier Integration" required>
+                </div>
+                <button type="submit" class="create-btn">Create New Key</button>
+            </form>
+        </div>
+
+        <div id="keysList" class="keys-list">
+            <!-- Keys will be populated here -->
+            <div class="empty-state">Loading keys...</div>
+        </div>
+    </div>
+
+    <!-- New Key Modal -->
+    <div id="newKeyModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">New API Key Created</h3>
+            <p class="modal-text">Please copy your new API key now. You won't be able to see it again!</p>
+
+            <div class="new-key-display" id="newKeyDisplay"></div>
+            <div id="copyFeedback" class="copy-feedback">Copied to clipboard!</div>
+
+            <div class="modal-actions">
+                <button class="modal-btn" id="closeModalBtn">I've copied it</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const signoutBtn = document.getElementById('signoutBtn');
+        const createKeyForm = document.getElementById('createKeyForm');
+        const keysList = document.getElementById('keysList');
+        const newKeyModal = document.getElementById('newKeyModal');
+        const newKeyDisplay = document.getElementById('newKeyDisplay');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const copyFeedback = document.getElementById('copyFeedback');
+
+        // Check if user is logged in
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            window.location.href = '/login.html';
+        }
+
+        // Sign out functionality
+        signoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+                sessionStorage.clear();
+                window.location.href = '/';
+            }
+        });
+
+        // Load Keys
+        async function loadKeys() {
+            try {
+                const response = await fetch(`/auth/api-keys/${userId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderKeys(data.apiKeys);
+                } else {
+                    keysList.innerHTML = '<div class="empty-state">Failed to load keys</div>';
+                }
+            } catch (error) {
+                console.error('Error loading keys:', error);
+                keysList.innerHTML = '<div class="empty-state">Error loading keys</div>';
+            }
+        }
+
+        function renderKeys(keys) {
+            if (!keys || keys.length === 0) {
+                keysList.innerHTML = '<div class="empty-state">No API keys found. Create one to get started.</div>';
+                return;
+            }
+
+            keysList.innerHTML = keys.map(key => `
+                <div class="key-item">
+                    <div class="key-info">
+                        <div class="key-name">${key.name}</div>
+                        <div class="key-value-wrapper">
+                            <span class="key-value">${key.key.substring(0, 8)}...</span>
+                        </div>
+                        <div class="key-created">Created on ${new Date(key.createdAt).toLocaleDateString()}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteKey('${key.id}')">Revoke</button>
+                </div>
+            `).join('');
+        }
+
+        // Create Key
+        createKeyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('keyName');
+            const name = nameInput.value.trim();
+
+            if (!name) return;
+
+            try {
+                const response = await fetch('/auth/api-keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, name })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    nameInput.value = '';
+                    showNewKeyModal(data.apiKey);
+                    loadKeys();
+                } else {
+                    alert('Failed to create key: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error creating key:', error);
+                alert('Error creating key');
+            }
+        });
+
+        // Delete Key
+        window.deleteKey = async (keyId) => {
+            if (!confirm('Are you sure you want to revoke this API key? Any applications using it will stop working.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/auth/api-keys/${userId}/${keyId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadKeys();
+                } else {
+                    alert('Failed to delete key: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error deleting key:', error);
+                alert('Error deleting key');
+            }
+        };
+
+        // Modal Logic
+        function showNewKeyModal(apiKey) {
+            newKeyDisplay.textContent = apiKey.key;
+            newKeyModal.classList.add('show');
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            newKeyModal.classList.remove('show');
+            copyFeedback.style.display = 'none';
+        });
+
+        newKeyDisplay.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(newKeyDisplay.textContent);
+                copyFeedback.style.display = 'block';
+                setTimeout(() => {
+                    copyFeedback.style.display = 'none';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+        });
+
+        // Initial load
+        loadKeys();
+    </script>
+</body>
+
+</html>

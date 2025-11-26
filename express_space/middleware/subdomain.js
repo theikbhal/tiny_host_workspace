@@ -12,8 +12,8 @@ const extractSubdomain = (req, res, next) => {
     const host = req.get('host') || '';
     const hostname = host.split(':')[0];
 
-    // ✅ Production: *.site.naml.in
-    if (hostname.endsWith('.site.naml.in')) {
+    // ✅ Production: *.simplhost.naml.in
+    if (hostname.endsWith('.simplhost.com')) {
         const parts = hostname.split('.');
         if (parts.length >= 4) {
             siteName = parts[0];
