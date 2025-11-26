@@ -594,7 +594,8 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    uploadedLink = `http://localhost:3000/site/${domainInput.value}`;
+                    //uploadedLink = `http://localhost:3000/site/${domainInput.value}`;
+                    uploadedLink = `https://${domainInput.value}.site.naml.in`;
                     successLink.textContent = uploadedLink;
                     successLink.href = uploadedLink;
                     successModal.classList.add('show');
