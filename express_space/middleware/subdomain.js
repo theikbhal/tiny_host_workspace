@@ -1,30 +1,26 @@
 /**
  * Subdomain Extraction Middleware
- * 
- * Extracts site name from:
- * 1. Subdomain in production (e.g., ikbhal.tiiny.site -> ikbhal)
- * 2. Query parameter in local (?name=ikbhal)
- * 3. Path parameter in local (/site/ikbhal)
- * 
- * Attaches siteName to req.siteName for downstream handlers
+ * Supports:
+ *  - ikbhal.site.naml.in
+ *  - ikbhal.localhost (dev)
+ *  - ?name=ikbhal fallback
  */
 
 const extractSubdomain = (req, res, next) => {
     let siteName = null;
 
-    // Method 1: Extract from subdomain (production)
     const host = req.get('host') || '';
-    const hostname = host.split(':')[0]; // Remove port if present
+    const hostname = host.split(':')[0];
 
-    // Check if it's a subdomain of tiiny.site
-    if (hostname.endsWith('.tiiny.site')) {
+    // ✅ Production: *.site.naml.in
+    if (hostname.endsWith('.site.naml.in')) {
         const parts = hostname.split('.');
-        if (parts.length >= 3) {
-            // Extract subdomain (e.g., ikbhal from ikbhal.tiiny.site)
+        if (parts.length >= 4) {
             siteName = parts[0];
         }
     }
-    // Check for localhost subdomain testing (e.g., ikbhal.localhost)
+
+    // ✅ Local testing: ikbhal.localhost
     else if (hostname.endsWith('.localhost')) {
         const parts = hostname.split('.');
         if (parts.length >= 2) {
@@ -32,15 +28,12 @@ const extractSubdomain = (req, res, next) => {
         }
     }
 
-    // Method 2: Extract from query parameter (local development)
+    // ✅ Fallback: query parameter
     if (!siteName && req.query.name) {
         siteName = req.query.name;
     }
 
-    // Method 3: Extract from path parameter (handled in route)
-    // This is handled in the route definition with :siteName parameter
-
-    // Attach to request object
+    // attach to request
     req.siteName = siteName;
 
     next();
