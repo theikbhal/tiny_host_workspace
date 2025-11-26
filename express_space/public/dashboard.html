@@ -55,22 +55,6 @@
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .signout-btn:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Main content wrapper */
-        .main-content {
-            display: flex;
-            justify-content: center;
             align-items: center;
             min-height: calc(100vh - 80px);
             padding: 20px;
@@ -573,52 +557,38 @@
 
         // Launch button
         launchBtn.addEventListener('click', async () => {
-            if (!selectedFile || !domainInput.value) return;
-
-            launchBtn.disabled = true;
-            launchBtn.textContent = 'Launching...';
-
-            const formData = new FormData();
-            formData.append('files', selectedFile);
-            formData.append('domain', domainInput.value);
-
-            try {
-                const response = await fetch('/v1/upload', {
-                    method: 'POST',
-                    headers: {
-                        'x-api-key': API_KEY
-                    },
-                    body: formData
+        },
+            body: formData
                 });
 
-                const data = await response.json();
+        const data = await response.json();
 
-                if (data.success) {
-                    //uploadedLink = `http://localhost:3000/site/${domainInput.value}`;
-                    uploadedLink = `https://${domainInput.value}.site.naml.in`;
-                    successLink.textContent = uploadedLink;
-                    successLink.href = uploadedLink;
-                    successModal.classList.add('show');
+        if (data.success) {
+            //uploadedLink = `http://localhost:3000/site/${domainInput.value}`;
+            uploadedLink = `https://${domainInput.value}.site.naml.in`;
+            successLink.textContent = uploadedLink;
+            successLink.href = uploadedLink;
+            successModal.classList.add('show');
 
-                    // Reset form
-                    selectedFile = null;
-                    fileInput.value = '';
-                    domainInput.value = '';
-                    fileSelected.classList.remove('show');
-                    uploadArea.style.display = 'block';
-                    uploadZipBtn.style.display = 'block';
-                    launchBtn.textContent = 'Launch';
-                    updateLaunchButton();
-                } else {
-                    alert('Upload failed: ' + data.error);
-                    launchBtn.disabled = false;
-                    launchBtn.textContent = 'Launch';
-                }
+            // Reset form
+            selectedFile = null;
+            fileInput.value = '';
+            domainInput.value = '';
+            fileSelected.classList.remove('show');
+            uploadArea.style.display = 'block';
+            uploadZipBtn.style.display = 'block';
+            launchBtn.textContent = 'Launch';
+            updateLaunchButton();
+        } else {
+            alert('Upload failed: ' + data.error);
+            launchBtn.disabled = false;
+            launchBtn.textContent = 'Launch';
+        }
             } catch (error) {
-                alert('Upload failed: ' + error.message);
-                launchBtn.disabled = false;
-                launchBtn.textContent = 'Launch';
-            }
+            alert('Upload failed: ' + error.message);
+            launchBtn.disabled = false;
+            launchBtn.textContent = 'Launch';
+        }
         });
 
         // Close modal
