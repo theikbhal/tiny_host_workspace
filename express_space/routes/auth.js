@@ -1,55 +1,294 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const fs = require('fs');
+const AdmZip = require('adm-zip');
 
-// In-memory user store (for demo purposes)
-// Structure: { email: { id, fullName, email, password } }
-const users = {};
+// ✅ Base domain for hosted sites
+const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'site.naml.in';
 
-// POST /auth/register - Register new user
-router.post('/register', (req, res) => {
-    const { fullName, email, password } = req.body;
+// ✅ Helper to build production URL like https://ikb.site.naml.in
+function buildSiteUrl(projectId, req) {
+    const proto =
+        req.headers['x-forwarded-proto'] ||
+        req.protocol ||
+        'http';
 
-    if (!fullName || !email || !password) {
-        return res.status(400).json({ success: false, error: 'All fields are required' });
-    }
+    const host = `${projectId}.${BASE_SITE_DOMAIN}`;
+    return `${proto}://${host}`;
+}
 
-    if (users[email]) {
-        return res.status(400).json({ success: false, error: 'User already exists' });
-    }
-
-    const newUser = {
-        id: uuidv4(),
-        fullName,
-        email,
-        password // In a real app, hash this!
-    };
-
-    users[email] = newUser;
-    console.log('New user registered:', email);
-
-    res.json({ success: true, message: 'Registration successful' });
+// Configure multer for file uploads (temporary storage)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/temp/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(
+            null,
+            file.fieldname +
+            '-' +
+            uniqueSuffix +
+            path.extname(file.originalname)
+        );
+    },
 });
 
-// POST /auth/login - Login user
-router.post('/login', (req, res) => {
-    const { email, password } = req.body;
+const upload = multer({ storage: storage });
 
-    if (!email || !password) {
-        return res.status(400).json({ success: false, error: 'Email and password are required' });
+// Mock data store
+const projects = {};
+
+// Helper function to ensure directory exists
+const ensureDir = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+};
+
+// Helper function to process uploaded file
+const processUploadedFile = (file, domain) => {
+    const siteDir = path.join(__dirname, '..', 'uploads', domain);
+    ensureDir(siteDir);
+
+    const fileExt = path.extname(file.originalname).toLowerCase();
+
+    if (fileExt === '.zip') {
+        // Extract ZIP file
+        try {
+            const zip = new AdmZip(file.path);
+            const tempExtractDir = path.join(
+                __dirname,
+                '..',
+                'uploads',
+                'temp',
+                `extract-${Date.now()}`
+            );
+
+            // Extract to temporary directory first
+            zip.extractAllTo(tempExtractDir, true);
+
+            // Check if ZIP contains a single root folder
+            const extractedItems = fs.readdirSync(tempExtractDir);
+
+            if (extractedItems.length === 1) {
+                const singleItem = path.join(
+                    tempExtractDir,
+                    extractedItems[0]
+                );
+                const stats = fs.statSync(singleItem);
+
+                if (stats.isDirectory()) {
+                    // ZIP contains a single folder - copy its contents directly
+                    const folderContents = fs.readdirSync(singleItem);
+
+                    folderContents.forEach((item) => {
+                        const srcPath = path.join(singleItem, item);
+                        const destPath = path.join(siteDir, item);
+
+                        // Move each item (file or folder) to site directory
+                        fs.renameSync(srcPath, destPath);
+                    });
+                } else {
+                    // Single file - move it directly
+                    const destPath = path.join(
+                        siteDir,
+                        extractedItems[0]
+                    );
+                    fs.renameSync(singleItem, destPath);
+                }
+            } else {
+                // Multiple items at root - move all directly
+                extractedItems.forEach((item) => {
+                    const srcPath = path.join(tempExtractDir, item);
+                    const destPath = path.join(siteDir, item);
+                    fs.renameSync(srcPath, destPath);
+                });
+            }
+
+            // Clean up temporary extraction directory
+            if (fs.existsSync(tempExtractDir)) {
+                fs.rmSync(tempExtractDir, {
+                    recursive: true,
+                    force: true,
+                });
+            }
+
+            // Delete the temporary ZIP file
+            fs.unlinkSync(file.path);
+
+            return { success: true, type: 'zip', extracted: true };
+        } catch (error) {
+            return {
+                success: false,
+                error: 'Failed to extract ZIP file: ' + error.message,
+            };
+        }
+    } else if (fileExt === '.html' || fileExt === '.htm') {
+        // Move HTML file to site directory as index.html
+        const targetPath = path.join(siteDir, 'index.html');
+        fs.renameSync(file.path, targetPath);
+
+        return { success: true, type: 'html', file: targetPath };
+    } else {
+        // For other files, move to site directory with original name
+        const targetPath = path.join(siteDir, file.originalname);
+        fs.renameSync(file.path, targetPath);
+
+        return { success: true, type: 'other', file: targetPath };
+    }
+};
+
+// Ensure temp directory exists
+ensureDir(path.join(__dirname, '..', 'uploads', 'temp'));
+
+// POST /v1/upload - Create Project
+router.post('/upload', upload.single('files'), (req, res) => {
+    const { siteSettings, domain } = req.body;
+    const file = req.file;
+
+    if (!file) {
+        return res
+            .status(400)
+            .json({ success: false, error: 'No file uploaded' });
     }
 
-    const user = users[email];
+    const projectId = domain || uuidv4();
+    const link = buildSiteUrl(projectId, req);
 
-    if (!user || user.password !== password) {
-        return res.status(401).json({ success: false, error: 'Invalid credentials' });
+    // Process the uploaded file
+    const result = processUploadedFile(file, projectId);
+
+    if (!result.success) {
+        return res
+            .status(500)
+            .json({ success: false, error: result.error });
     }
 
-    // In a real app, generate JWT here
-    const token = uuidv4();
+    projects[projectId] = {
+        id: projectId,
+        link: link,
+        status: 'active',
+        fileType: result.type,
+        settings: siteSettings ? JSON.parse(siteSettings) : {},
+        createdAt: new Date(),
+    };
 
-    console.log('User logged in:', email);
-    res.json({ success: true, token, user: { fullName: user.fullName, email: user.email } });
+    res.json({
+        success: true,
+        data: {
+            link: link,
+            status: 'active',
+            profile: {
+                quotaUsed: 5,
+                quotaLimit: 1024,
+            },
+        },
+    });
+});
+
+// PUT /v1/upload - Update Project
+router.put('/upload', upload.single('files'), (req, res) => {
+    const { siteSettings, domain } = req.body;
+    const file = req.file;
+
+    if (!domain) {
+        return res.status(400).json({
+            success: false,
+            error: 'Domain is required for update',
+        });
+    }
+
+    const projectId = domain;
+    const link = buildSiteUrl(projectId, req);
+
+    // Process the uploaded file if provided
+    if (file) {
+        const result = processUploadedFile(file, projectId);
+
+        if (!result.success) {
+            return res
+                .status(500)
+                .json({ success: false, error: result.error });
+        }
+
+        projects[projectId] = {
+            ...projects[projectId],
+            id: projectId,
+            link: link,
+            status: 'active',
+            fileType: result.type,
+            settings: siteSettings
+                ? JSON.parse(siteSettings)
+                : projects[projectId]?.settings || {},
+            updatedAt: new Date(),
+        };
+    } else {
+        // Update settings only
+        projects[projectId] = {
+            ...projects[projectId],
+            id: projectId,
+            link: link,
+            status: 'active',
+            settings: siteSettings
+                ? JSON.parse(siteSettings)
+                : projects[projectId]?.settings || {},
+            updatedAt: new Date(),
+        };
+    }
+
+    res.json({
+        success: true,
+        data: {
+            link: link,
+            status: 'active',
+            profile: {
+                quotaUsed: 5,
+                quotaLimit: 1024,
+            },
+        },
+    });
+});
+
+// DELETE /v1/delete - Delete Project
+router.delete('/delete', upload.none(), (req, res) => {
+    const { domain } = req.body;
+
+    if (!domain) {
+        return res.status(400).json({
+            success: false,
+            error: 'Domain is required',
+        });
+    }
+
+    delete projects[domain];
+
+    const deletedUrl = `https://${domain}.${BASE_SITE_DOMAIN}`;
+
+    res.json({
+        success: true,
+        data: {
+            links: [deletedUrl],
+            quotaUsed: 5,
+            quotaLimit: 1024,
+        },
+    });
+});
+
+// GET /v1/profile - Fetch Profile
+router.get('/profile', (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            links: Object.values(projects).map((p) => p.link),
+            quotaUsed: 5,
+            quotaLimit: 1024,
+        },
+    });
 });
 
 module.exports = router;
