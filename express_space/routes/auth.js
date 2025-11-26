@@ -495,6 +495,22 @@ router.put('/upload', upload.single('files'), (req, res) => {
         };
     }
 
+    // Update sites.json
+    const sites = readSites();
+    const siteIndex = sites.findIndex(s => s.domain === projectId);
+
+    if (siteIndex !== -1) {
+        sites[siteIndex] = {
+            ...sites[siteIndex],
+            link: link,
+            status: 'active',
+            fileType: file ? (processUploadedFile(file, projectId).type) : sites[siteIndex].fileType,
+            settings: siteSettings ? JSON.parse(siteSettings) : (sites[siteIndex].settings || {}),
+            updatedAt: new Date().toISOString()
+        };
+        writeSites(sites);
+    }
+
     res.json({
         success: true,
         data: {
@@ -518,6 +534,11 @@ router.delete('/delete', upload.none(), (req, res) => {
             error: 'Domain is required',
         });
     }
+
+    // Remove from sites.json
+    const sites = readSites();
+    const filteredSites = sites.filter(s => s.domain !== domain);
+    writeSites(filteredSites);
 
     delete projects[domain];
 

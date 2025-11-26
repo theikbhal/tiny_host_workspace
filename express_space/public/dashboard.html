@@ -55,36 +55,43 @@
             gap: 1rem;
         }
 
-        .manage-sites-link {
-            color: #3b82f6;
+        /* Pill Styles for Links */
+        .nav-pill {
+            color: #4b5563;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
             transition: all 0.3s;
-        }
-
-        .manage-sites-link:hover {
-            background: #eff6ff;
-        }
-
-        .signout-btn {
-            padding: 0.5rem 1.5rem;
-            background: #ef4444;
-            color: white;
+            background: #f3f4f6;
             border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .signout-btn:hover {
-            background: #dc2626;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        .nav-pill:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .nav-pill.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-pill.primary:hover {
+            background: #2563eb;
+        }
+
+        .nav-pill.danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .nav-pill.danger:hover {
+            background: #fecaca;
         }
 
         /* Main content wrapper */
@@ -411,8 +418,8 @@
             <span>host.naml.in</span>
         </a>
         <div class="header-right">
-            <a href="/manage-sites.html" class="manage-sites-link">Manage Sites</a>
-            <button class="signout-btn" id="signoutBtn">Sign Out</button>
+            <a href="/manage-sites.html" class="nav-pill">Manage Sites</a>
+            <button class="nav-pill danger" id="signoutBtn">Sign Out</button>
         </div>
     </header>
 
@@ -493,6 +500,21 @@
         let selectedFile = null;
         let uploadedLink = '';
 
+        // Check for edit param
+        const urlParams = new URLSearchParams(window.location.search);
+        const editDomain = urlParams.get('edit');
+
+        if (editDomain) {
+            domainInput.value = editDomain;
+            // Switch to update tab
+            tabs.forEach(t => t.classList.remove('active'));
+            const updateTab = document.querySelector('.tab[data-tab="update"]');
+            if (updateTab) updateTab.classList.add('active');
+
+            // Update button text
+            launchBtn.textContent = 'Update Site';
+        }
+
         // Sign out functionality
         signoutBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to sign out?')) {
@@ -511,6 +533,13 @@
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+
+                // Update button text based on tab
+                if (tab.dataset.tab === 'update') {
+                    launchBtn.textContent = 'Update Site';
+                } else {
+                    launchBtn.textContent = 'Launch';
+                }
             });
         });
 
@@ -539,8 +568,8 @@
                 uploadArea.style.display = 'none';
                 uploadZipBtn.style.display = 'none';
 
-                // Auto-fill domain from filename if empty
-                if (!domainInput.value) {
+                // Auto-fill domain from filename if empty and not editing
+                if (!domainInput.value && !editDomain) {
                     const name = selectedFile.name.split('.')[0];
                     domainInput.value = name.replace(/[^a-zA-Z0-9_-]/g, '');
                 }
@@ -582,7 +611,7 @@
                 uploadArea.style.display = 'none';
                 uploadZipBtn.style.display = 'none';
 
-                if (!domainInput.value) {
+                if (!domainInput.value && !editDomain) {
                     const name = file.name.split('.')[0];
                     domainInput.value = name.replace(/[^a-zA-Z0-9_-]/g, '');
                 }
@@ -593,6 +622,10 @@
 
         // Update launch button state
         function updateLaunchButton() {
+            // For update, file is optional if just updating settings (but here we only update file)
+            // But let's require file for now as per original logic, or allow if editing?
+            // The backend supports file-less update for settings, but UI is file-centric.
+            // Let's keep it simple: require file for now.
             launchBtn.disabled = !(selectedFile && domainInput.value);
         }
 
@@ -601,7 +634,7 @@
             if (!selectedFile || !domainInput.value) return;
 
             launchBtn.disabled = true;
-            launchBtn.textContent = 'Launching...';
+            launchBtn.textContent = editDomain ? 'Updating...' : 'Launching...';
 
             const formData = new FormData();
             formData.append('files', selectedFile);
@@ -613,9 +646,12 @@
                 formData.append('userId', userId);
             }
 
+            const isUpdate = document.querySelector('.tab[data-tab="update"]').classList.contains('active');
+            const method = isUpdate ? 'PUT' : 'POST';
+
             try {
                 const response = await fetch('/v1/upload', {
-                    method: 'POST',
+                    method: method,
                     headers: {
                         'x-api-key': API_KEY
                     },
@@ -625,7 +661,6 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    //uploadedLink = `http://localhost:3000/site/${domainInput.value}`;
                     uploadedLink = `https://${domainInput.value}.site.naml.in`;
                     successLink.textContent = uploadedLink;
                     successLink.href = uploadedLink;
@@ -634,21 +669,21 @@
                     // Reset form
                     selectedFile = null;
                     fileInput.value = '';
-                    domainInput.value = '';
+                    if (!editDomain) domainInput.value = ''; // Keep domain if editing
                     fileSelected.classList.remove('show');
                     uploadArea.style.display = 'block';
                     uploadZipBtn.style.display = 'block';
-                    launchBtn.textContent = 'Launch';
+                    launchBtn.textContent = isUpdate ? 'Update Site' : 'Launch';
                     updateLaunchButton();
                 } else {
                     alert('Upload failed: ' + data.error);
                     launchBtn.disabled = false;
-                    launchBtn.textContent = 'Launch';
+                    launchBtn.textContent = isUpdate ? 'Update Site' : 'Launch';
                 }
             } catch (error) {
                 alert('Upload failed: ' + error.message);
                 launchBtn.disabled = false;
-                launchBtn.textContent = 'Launch';
+                launchBtn.textContent = isUpdate ? 'Update Site' : 'Launch';
             }
         });
 

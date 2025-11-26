@@ -1,1 +1,22 @@
-[]
+[
+    {
+        "id": "ikb",
+        "userId": "f1e03b0c-4861-40f5-9e4d-4d2e893acb32",
+        "domain": "ikb",
+        "link": "https://ikb.site.naml.in",
+        "status": "active",
+        "fileType": "html",
+        "settings": {},
+        "createdAt": "2025-11-26T15:00:00.000Z"
+    },
+    {
+        "id": "ikb2",
+        "userId": "f1e03b0c-4861-40f5-9e4d-4d2e893acb32",
+        "domain": "ikb2",
+        "link": "https://ikb2.site.naml.in",
+        "status": "active",
+        "fileType": "html",
+        "settings": {},
+        "createdAt": "2025-11-26T15:05:00.000Z"
+    }
+]

@@ -52,34 +52,40 @@
             gap: 1rem;
         }
 
-        .dashboard-link {
-            color: #3b82f6;
+        /* Pill Styles for Links */
+        .nav-pill {
+            color: #4b5563;
             text-decoration: none;
             font-size: 0.875rem;
             font-weight: 600;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            /* Pill shape */
             transition: all 0.3s;
+            background: #f3f4f6;
         }
 
-        .dashboard-link:hover {
-            background: #eff6ff;
+        .nav-pill:hover {
+            background: #e5e7eb;
+            color: #1f2937;
         }
 
-        .signout-btn {
-            padding: 0.5rem 1.5rem;
-            background: #ef4444;
+        .nav-pill.primary {
+            background: #3b82f6;
             color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .signout-btn:hover {
-            background: #dc2626;
+        .nav-pill.primary:hover {
+            background: #2563eb;
+        }
+
+        .nav-pill.danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .nav-pill.danger:hover {
+            background: #fecaca;
         }
 
         /* Main Content */
@@ -100,99 +106,101 @@
             margin-bottom: 2rem;
         }
 
-        .sites-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .site-card {
+        /* Table Styles */
+        .sites-table-container {
             background: white;
             border-radius: 12px;
-            padding: 1.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            overflow: hidden;
         }
 
-        .site-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+        .sites-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
         }
 
-        .site-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
+        .sites-table th {
+            background: #f9fafb;
+            padding: 1rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .sites-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937;
+            font-size: 0.875rem;
+        }
+
+        .sites-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sites-table tr:hover {
+            background: #f9fafb;
         }
 
         .site-domain {
-            font-size: 1.125rem;
             font-weight: 600;
-            color: #1f2937;
-            word-break: break-all;
-        }
-
-        .site-status {
-            padding: 0.25rem 0.75rem;
-            background: #d1fae5;
-            color: #059669;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            color: #111827;
         }
 
         .site-link {
             color: #3b82f6;
             text-decoration: none;
-            font-size: 0.875rem;
-            word-break: break-all;
-            display: block;
-            margin-bottom: 0.5rem;
         }
 
         .site-link:hover {
             text-decoration: underline;
         }
 
-        .site-date {
-            color: #9ca3af;
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            background: #d1fae5;
+            color: #059669;
+            border-radius: 9999px;
             font-size: 0.75rem;
-            margin-bottom: 1rem;
+            font-weight: 600;
         }
 
-        .site-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            border: none;
+        .action-btn {
+            padding: 0.375rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            border: 1px solid transparent;
+            margin-right: 0.5rem;
+            transition: all 0.2s;
         }
 
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
+        .btn-edit {
+            background: white;
+            border-color: #d1d5db;
+            color: #374151;
         }
 
-        .btn-primary:hover {
-            background: #2563eb;
+        .btn-edit:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
         }
 
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #6b7280;
+        .btn-delete {
+            background: white;
+            border-color: #fca5a5;
+            color: #dc2626;
         }
 
-        .btn-secondary:hover {
-            background: #e5e7eb;
+        .btn-delete:hover {
+            background: #fee2e2;
         }
 
         .empty-state {
@@ -252,15 +260,20 @@
             <span>host.naml.in</span>
         </a>
         <div class="header-right">
-            <a href="/dashboard.html" class="dashboard-link">Dashboard</a>
-            <button class="signout-btn" id="signoutBtn">Sign Out</button>
+            <a href="/dashboard.html" class="nav-pill">Dashboard</a>
+            <button class="nav-pill danger" id="signoutBtn" style="border:none; cursor:pointer;">Sign Out</button>
         </div>
     </header>
 
     <!-- Main Content -->
     <div class="container">
-        <h1>My Sites</h1>
-        <p class="subtitle">Manage all your hosted sites</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+            <div>
+                <h1>My Sites</h1>
+                <p class="subtitle" style="margin-bottom:0;">Manage all your hosted sites</p>
+            </div>
+            <a href="/dashboard.html" class="create-btn">Create New Site</a>
+        </div>
 
         <div id="loadingState" class="loading">
             Loading your sites...
@@ -273,8 +286,21 @@
             <a href="/dashboard.html" class="create-btn">Create Site</a>
         </div>
 
-        <div id="sitesGrid" class="sites-grid" style="display: none;">
-            <!-- Sites will be loaded here -->
+        <div id="sitesTableContainer" class="sites-table-container" style="display: none;">
+            <table class="sites-table">
+                <thead>
+                    <tr>
+                        <th>Site Name</th>
+                        <th>Link</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="sitesTableBody">
+                    <!-- Rows will be populated here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -282,14 +308,13 @@
         const signoutBtn = document.getElementById('signoutBtn');
         const loadingState = document.getElementById('loadingState');
         const emptyState = document.getElementById('emptyState');
-        const sitesGrid = document.getElementById('sitesGrid');
+        const sitesTableContainer = document.getElementById('sitesTableContainer');
+        const sitesTableBody = document.getElementById('sitesTableBody');
 
         // Check if user is logged in
         const userId = localStorage.getItem('userId');
-        const userEmail = localStorage.getItem('userEmail');
 
         if (!userId) {
-            // Redirect to login if not logged in
             window.location.href = '/login.html';
         }
 
@@ -313,27 +338,31 @@
                 loadingState.style.display = 'none';
 
                 if (data.success && data.sites && data.sites.length > 0) {
-                    // Show sites
-                    sitesGrid.style.display = 'grid';
+                    sitesTableContainer.style.display = 'block';
                     emptyState.style.display = 'none';
 
-                    sitesGrid.innerHTML = data.sites.map(site => `
-                        <div class="site-card">
-                            <div class="site-header">
+                    sitesTableBody.innerHTML = data.sites.map(site => `
+                        <tr>
+                            <td>
                                 <div class="site-domain">${site.domain}</div>
-                                <div class="site-status">${site.status}</div>
-                            </div>
-                            <a href="${site.link}" target="_blank" class="site-link">${site.link}</a>
-                            <div class="site-date">Created: ${new Date(site.createdAt).toLocaleDateString()}</div>
-                            <div class="site-actions">
-                                <button class="btn btn-primary" onclick="viewSite('${site.link}')">View Site</button>
-                                <button class="btn btn-secondary" onclick="copySiteLink('${site.link}')">Copy Link</button>
-                            </div>
-                        </div>
+                            </td>
+                            <td>
+                                <a href="${site.link}" target="_blank" class="site-link">${site.link}</a>
+                            </td>
+                            <td>
+                                <span class="status-badge">${site.status || 'Active'}</span>
+                            </td>
+                            <td>
+                                ${new Date(site.createdAt).toLocaleDateString()}
+                            </td>
+                            <td>
+                                <button class="action-btn btn-edit" onclick="editSite('${site.domain}')">Edit</button>
+                                <button class="action-btn btn-delete" onclick="deleteSite('${site.domain}')">Delete</button>
+                            </td>
+                        </tr>
                     `).join('');
                 } else {
-                    // Show empty state
-                    sitesGrid.style.display = 'none';
+                    sitesTableContainer.style.display = 'none';
                     emptyState.style.display = 'block';
                 }
             } catch (error) {
@@ -343,17 +372,36 @@
             }
         }
 
-        function viewSite(link) {
-            window.open(link, '_blank');
+        function editSite(domain) {
+            // Redirect to dashboard with edit param
+            window.location.href = `/dashboard.html?edit=${domain}`;
         }
 
-        async function copySiteLink(link) {
+        async function deleteSite(domain) {
+            if (!confirm(`Are you sure you want to delete ${domain}? This cannot be undone.`)) {
+                return;
+            }
+
             try {
-                await navigator.clipboard.writeText(link);
-                alert('Link copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                alert('Failed to copy link');
+                const formData = new FormData();
+                formData.append('domain', domain);
+
+                const response = await fetch('/v1/delete', {
+                    method: 'DELETE',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Reload sites
+                    loadSites();
+                } else {
+                    alert('Failed to delete site: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Failed to delete site');
             }
         }
 

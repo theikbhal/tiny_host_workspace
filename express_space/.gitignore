@@ -39,3 +39,7 @@ build/
 
 uploads/*
 !/uploads/.gitkeep
+
+
+test/*
+!/test/.gitkeep 
