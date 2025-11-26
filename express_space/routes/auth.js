@@ -5,9 +5,217 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const AdmZip = require('adm-zip');
+const bcrypt = require('bcrypt');
 
 // ✅ Base domain for hosted sites
 const BASE_SITE_DOMAIN = process.env.BASE_SITE_DOMAIN || 'site.naml.in';
+
+// Path to users JSON file
+const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json');
+
+// Helper function to ensure directory exists
+const ensureDir = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+};
+
+// Ensure data directory exists
+ensureDir(path.join(__dirname, '..', 'data'));
+
+// Helper functions for user management
+const readUsers = () => {
+    try {
+        if (!fs.existsSync(USERS_FILE)) {
+            fs.writeFileSync(USERS_FILE, JSON.stringify([], null, 2));
+            return [];
+        }
+        const data = fs.readFileSync(USERS_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Error reading users file:', error);
+        return [];
+    }
+};
+
+const writeUsers = (users) => {
+    try {
+        fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+        return true;
+    } catch (error) {
+        console.error('Error writing users file:', error);
+        return false;
+    }
+};
+
+const findUserByEmail = (email) => {
+    const users = readUsers();
+    return users.find(user => user.email.toLowerCase() === email.toLowerCase());
+};
+
+// ==================== AUTH ROUTES ====================
+
+// POST /auth/register - User Registration
+router.post('/register', async (req, res) => {
+    try {
+        const { email, password, name } = req.body;
+
+        // Validation
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Email and password are required'
+            });
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid email format'
+            });
+        }
+
+        // Password strength validation
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                error: 'Password must be at least 6 characters long'
+            });
+        }
+
+        // Check if user already exists
+        const existingUser = findUserByEmail(email);
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                error: 'User with this email already exists'
+            });
+        }
+
+        // Hash password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Create new user
+        const newUser = {
+            id: uuidv4(),
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            name: name || email.split('@')[0],
+            createdAt: new Date().toISOString(),
+            projects: []
+        };
+
+        // Save user
+        const users = readUsers();
+        users.push(newUser);
+
+        if (!writeUsers(users)) {
+            return res.status(500).json({
+                success: false,
+                error: 'Failed to save user data'
+            });
+        }
+
+        // Return success (without password)
+        const { password: _, ...userWithoutPassword } = newUser;
+
+        res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            user: userWithoutPassword
+        });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// POST /auth/login - User Login
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Validation
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                error: 'Email and password are required'
+            });
+        }
+
+        // Find user
+        const user = findUserByEmail(email);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid email or password'
+            });
+        }
+
+        // Verify password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                error: 'Invalid email or password'
+            });
+        }
+
+        // Return success (without password)
+        const { password: _, ...userWithoutPassword } = user;
+
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: userWithoutPassword
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// GET /auth/user/:email - Get user by email (for checking if exists)
+router.get('/user/:email', (req, res) => {
+    try {
+        const { email } = req.params;
+        const user = findUserByEmail(email);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'User not found'
+            });
+        }
+
+        const { password: _, ...userWithoutPassword } = user;
+
+        res.json({
+            success: true,
+            user: userWithoutPassword
+        });
+
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+});
+
+// ==================== PROJECT ROUTES ====================
 
 // ✅ Helper to build production URL like https://ikb.site.naml.in
 function buildSiteUrl(projectId, req) {
@@ -42,13 +250,6 @@ const upload = multer({ storage: storage });
 
 // Mock data store
 const projects = {};
-
-// Helper function to ensure directory exists
-const ensureDir = (dirPath) => {
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true });
-    }
-};
 
 // Helper function to process uploaded file
 const processUploadedFile = (file, domain) => {

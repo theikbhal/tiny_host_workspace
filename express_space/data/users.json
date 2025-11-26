@@ -1,0 +1,10 @@
+[
+  {
+    "id": "f1e03b0c-4861-40f5-9e4d-4d2e893acb32",
+    "email": "test@test.com",
+    "password": "$2b$10$EE5eX9c6wFV59cW.T6Z23uRaGG7pmwn/u2QRVLlJF7b.G4svqSoem",
+    "name": "test",
+    "createdAt": "2025-11-26T06:16:59.489Z",
+    "projects": []
+  }
+]
