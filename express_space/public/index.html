@@ -332,15 +332,221 @@
             }
         });
 
+        display: flex;
+        gap: 1rem;
+        margin - bottom: 1.5rem;
+        border - bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #718096;
+            font - weight: 600;
+            cursor: pointer;
+            border - bottom: 3px solid transparent;
+            margin - bottom: -2px;
+        }
+
+        .tab.active {
+            color: #007bff;
+            border - bottom - color: #007bff;
+        }
+
+        .upload - area {
+            border: 2px dashed #cbd5e0;
+            border - radius: 8px;
+            padding: 3rem 2rem;
+            text - align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin - bottom: 1rem;
+        }
+
+        .upload - area:hover {
+            border - color: #007bff;
+            background: #f7fafc;
+        }
+
+        .upload - icon {
+            font - size: 3rem;
+            margin - bottom: 1rem;
+            color: #a0aec0;
+        }
+
+        .upload - text {
+            color: #4a5568;
+            margin - bottom: 0.5rem;
+        }
+
+        .upload - subtext {
+            color: #a0aec0;
+            font - size: 0.875rem;
+        }
+
+        .upload - btn {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            border - radius: 6px;
+            cursor: pointer;
+            font - size: 0.875rem;
+            margin - bottom: 1rem;
+        }
+
+        .template - link {
+            text - align: center;
+            font - size: 0.875rem;
+            color: #718096;
+            margin - bottom: 1.5rem;
+        }
+
+        .template - link a {
+            color: #007bff;
+            text - decoration: underline;
+        }
+
+        .launch - btn {
+            width: 100 %;
+            padding: 1rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border - radius: 8px;
+            font - size: 1rem;
+            font - weight: 600;
+            cursor: pointer;
+        }
+
+        .launch - btn:hover {
+            background: #0056b3;
+        }
+
+        .testimonial {
+            max - width: 300px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: #fffbeb;
+            border - radius: 8px;
+            font - size: 0.875rem;
+            color: #78350f;
+            font - style: italic;
+        }
+
+        .testimonial - author {
+            margin - top: 0.5rem;
+            font - style: normal;
+            font - weight: 600;
+        }
+
+        input[type = "file"] {
+            display: none;
+        }
+    </style >
+</head >
+
+            <body>
+                <nav class="navbar">
+                    <div class="navbar-left">
+                        <a href="/" class="navbar-brand">
+                            <span>⚡</span>
+                            host.naml.in
+                        </a>
+                        <div class="navbar-links">
+                            <a href="/blog.html" class="navbar-link">Blog</a>
+                            <a href="/faq.html" class="navbar-link">FAQ</a>
+                            <a href="/pricing.html" class="navbar-link">Pricing</a>
+                        </div>
+                    </div>
+                    <div class="navbar-right">
+                        <a href="/login.html" class="login-btn">Log in</a>
+                        <a href="/register.html" class="signup-btn">Sign Up Free</a>
+                    </div>
+                </nav>
+
+                <div class="hero">
+                    <h1>The simplest way to host &<br>share your web project</h1>
+                    <p class="hero-subtitle">🌷 Used by thousands across the web</p>
+
+                    <div class="upload-card">
+                        <div class="domain-input-group">
+                            <input type="text" id="domainInput" class="domain-input" placeholder="link-name">
+                                <span class="domain-suffix">.tiinysite ▼</span>
+                        </div>
+
+                        <div class="tabs">
+                            <button class="tab active">HTML</button>
+                            <button class="tab">PDF</button>
+                            <button class="tab">Templates</button>
+                        </div>
+
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📁 📄</div>
+                            <div class="upload-text">Drag & drop zip or single file here</div>
+                            <div class="upload-subtext">Or</div>
+                        </div>
+
+                        <input type="file" id="fileInput" accept=".zip,.html,.htm">
+                            <button class="upload-btn" id="uploadBtn">Upload file</button>
+
+                            <div class="template-link">
+                                Or <a href="#" id="templateLink">use our template</a>
+                            </div>
+
+                            <button class="launch-btn" id="launchBtn">Upload</button>
+                    </div>
+
+                    <div class="testimonial">
+                        "perfect for sharing quick web updates with clients. it's just a simple, hassle-free way to host
+                        prototypes."
+                        <div class="testimonial-author">- Phil Delvecchio, Hayday Group</div>
+                    </div>
+                </div>
+
+                <script>
+                    const uploadArea = document.getElementById('uploadArea');
+                    const fileInput = document.getElementById('fileInput');
+                    const uploadBtn = document.getElementById('uploadBtn');
+                    const launchBtn = document.getElementById('launchBtn');
+                    const domainInput = document.getElementById('domainInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                    uploadArea.innerHTML = `<div class="upload-icon">📦</div><div class="upload-text">${file.name}</div>`;
+
+                    if (!domainInput.value) {
+                    const name = file.name.split('.')[0];
+                    domainInput.value = name.replace(/[^a-zA-Z0-9_-]/g, '');
+                }
+            }
+        });
+
         launchBtn.addEventListener('click', () => {
-            // Redirect to login/dashboard
-            window.location.href = '/login.html';
+                        // Redirect to login/dashboard
+                        window.location.href = '/login.html';
         });
 
         document.getElementById('templateLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Template feature coming soon!');
+                        e.preventDefault();
+                    alert('Template feature coming soon!');
         });
+
+                    // Check if user is logged in
+                    const userId = localStorage.getItem('userId');
+                    if (userId) {
+            const navbarRight = document.querySelector('.navbar-right');
+                    navbarRight.innerHTML = `
+                    <a href="/dashboard.html" class="login-btn">Dashboard</a>
+                    <a href="/manage-sites.html" class="signup-btn">Manage Sites</a>
+            `;
+        }
+
     </script>
 </body>
 
