@@ -45,13 +45,10 @@ export default function PricingPage() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
             {/* Header Section */}
             <div className="container mx-auto px-4 py-8">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <div className="text-center mb-4">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                         Simple, Transparent Pricing
                     </h1>
-                    <p className="text-base text-gray-600 max-w-2xl mx-auto">
-                        Choose the perfect plan for your needs. All plans include our core features with a 7-day money-back guarantee.
-                    </p>
                 </div>
 
                 {/* Pricing Cards Grid */}

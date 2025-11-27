@@ -43,9 +43,9 @@ export default function PricingCard({
             className={`
         relative bg-white rounded-xl p-5 
         border-2 ${colors.border}
-        shadow-lg hover:shadow-xl
+        shadow-lg hover:shadow-2xl
         transition-all duration-300 ease-in-out
-        hover:scale-102 hover:-translate-y-1
+        hover:scale-105 hover:-translate-y-2
         ${highlighted ? 'ring-2 ring-purple-300 ring-opacity-50' : ''}
       `}
         >
@@ -88,12 +88,14 @@ export default function PricingCard({
             </button>
 
             {/* Money Back Guarantee */}
-            <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
-                <span className="text-lg">🎯</span>
-                <span className="text-xs text-gray-700 font-medium">
-                    7 day money back guarantee
-                </span>
-            </div>
+            {plan !== 'Free' && (
+                <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
+                    <span className="text-lg">🎯</span>
+                    <span className="text-xs text-gray-700 font-medium">
+                        7 day money back guarantee
+                    </span>
+                </div>
+            )}
 
             {/* Features List */}
             <ul className="space-y-2">
