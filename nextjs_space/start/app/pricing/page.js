@@ -11,10 +11,7 @@ export default function PricingPage() {
             features: [
                 { icon: '💻', text: '1 active project' },
                 { icon: '☁️', text: '25 MB upload limit/project' },
-                { icon: '📊', text: '10,000 visits /mo' },
-                { icon: '🔒', text: 'SSL certificate' },
-                { icon: '⚡', text: 'Fast CDN delivery' },
-                { icon: '🌐', text: 'Custom subdomain' }
+                { icon: '📊', text: '10,000 visits /mo' }
             ]
         },
         {
@@ -27,12 +24,7 @@ export default function PricingPage() {
             features: [
                 { icon: '💻', text: '5 active projects' },
                 { icon: '☁️', text: '75 MB upload limit/project' },
-                { icon: '📊', text: '100,000 visits /mo' },
-                { icon: '🔒', text: 'SSL certificate' },
-                { icon: '⚡', text: 'Fast CDN delivery' },
-                { icon: '🌐', text: 'Custom domain support' },
-                { icon: '🎨', text: 'Remove tiiny.host branding' },
-                { icon: '📧', text: 'Priority email support' }
+                { icon: '📊', text: '100,000 visits /mo' }
             ]
         },
         {
@@ -44,15 +36,7 @@ export default function PricingPage() {
             features: [
                 { icon: '💻', text: '15 active projects' },
                 { icon: '☁️', text: '10 GB upload limit/project' },
-                { icon: '📊', text: '500,000 visits /mo' },
-                { icon: '🔒', text: 'SSL certificate' },
-                { icon: '⚡', text: 'Fast CDN delivery' },
-                { icon: '🌐', text: 'Custom domain support' },
-                { icon: '🎨', text: 'Remove tiiny.host branding' },
-                { icon: '📧', text: 'Priority email support' },
-                { icon: '📈', text: 'Advanced analytics' },
-                { icon: '🔐', text: 'Password protection' },
-                { icon: '👥', text: 'Team collaboration' }
+                { icon: '📊', text: '500,000 visits /mo' }
             ]
         }
     ];
