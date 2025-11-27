@@ -41,34 +41,34 @@ export default function PricingCard({
     return (
         <div
             className={`
-        relative bg-white rounded-2xl p-8 
+        relative bg-white rounded-xl p-5 
         border-2 ${colors.border}
-        shadow-lg hover:shadow-2xl
+        shadow-lg hover:shadow-xl
         transition-all duration-300 ease-in-out
-        hover:scale-105 hover:-translate-y-2
-        ${highlighted ? 'ring-4 ring-purple-300 ring-opacity-50' : ''}
+        hover:scale-102 hover:-translate-y-1
+        ${highlighted ? 'ring-2 ring-purple-300 ring-opacity-50' : ''}
       `}
         >
             {/* Plan Name */}
-            <h3 className={`text-3xl font-bold mb-3 ${colors.titleColor}`}>
+            <h3 className={`text-2xl font-bold mb-2 ${colors.titleColor}`}>
                 {plan}
             </h3>
 
             {/* Description */}
-            <p className="text-gray-600 mb-6 min-h-[3rem]">
+            <p className="text-sm text-gray-600 mb-4 min-h-[2.5rem]">
                 {description}
             </p>
 
             {/* Price */}
-            <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                    <span className="text-gray-500 text-xl">₹</span>
-                    <span className={`text-5xl font-bold ${colors.priceColor}`}>
+            <div className="mb-4">
+                <div className="flex items-baseline gap-1">
+                    <span className="text-gray-500 text-base">₹</span>
+                    <span className={`text-3xl font-bold ${colors.priceColor}`}>
                         {price.toLocaleString()}
                     </span>
-                    <span className="text-gray-500 text-lg">/month</span>
+                    <span className="text-gray-500 text-sm">/month</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 mt-1">
                     Billed ₹{billedYearly.toLocaleString()} /year
                 </p>
             </div>
@@ -76,33 +76,33 @@ export default function PricingCard({
             {/* CTA Button */}
             <button
                 className={`
-          w-full py-3 px-6 rounded-lg
+          w-full py-2 px-4 rounded-lg
           ${colors.button}
           transition-all duration-200
           transform active:scale-95
-          font-medium text-lg
-          mb-6
+          font-medium text-base
+          mb-4
         `}
             >
                 Get started →
             </button>
 
             {/* Money Back Guarantee */}
-            <div className="flex items-center gap-2 mb-6 pb-6 border-b border-gray-200">
-                <span className="text-2xl">🎯</span>
-                <span className="text-sm text-gray-700 font-medium">
+            <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
+                <span className="text-lg">🎯</span>
+                <span className="text-xs text-gray-700 font-medium">
                     7 day money back guarantee
                 </span>
             </div>
 
             {/* Features List */}
-            <ul className="space-y-4">
+            <ul className="space-y-2">
                 {features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                        <span className={`text-xl mt-0.5 ${colors.icon}`}>
+                    <li key={index} className="flex items-start gap-2">
+                        <span className={`text-base mt-0.5 ${colors.icon}`}>
                             {feature.icon}
                         </span>
-                        <span className="text-gray-700 flex-1">
+                        <span className="text-sm text-gray-700 flex-1">
                             {feature.text}
                         </span>
                     </li>
