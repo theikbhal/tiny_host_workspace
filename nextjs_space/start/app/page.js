@@ -85,13 +85,6 @@ export default function Home() {
           onChange={handleFileChange}
         />
 
-        <button
-          className="bg-white text-gray-600 border-2 border-gray-200 px-4 py-2 rounded-md cursor-pointer text-sm mb-3 hover:bg-gray-50 w-full md:w-auto"
-          onClick={handleUploadClick}
-        >
-          Upload file
-        </button>
-
 
 
         <button
