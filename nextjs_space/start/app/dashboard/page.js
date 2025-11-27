@@ -1,9 +1,11 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Dashboard() {
     const router = useRouter();
+    const supabase = createClient();
     const fileInputRef = useRef(null);
     const [domain, setDomain] = useState('');
     const [file, setFile] = useState(null);
@@ -11,13 +13,19 @@ export default function Dashboard() {
     const [isUploading, setIsUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [uploadedLink, setUploadedLink] = useState('');
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-            router.push('/login');
-        }
-    }, [router]);
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.push('/login');
+            } else {
+                setUser(session.user);
+            }
+        };
+        checkUser();
+    }, [router, supabase]);
 
     const handleFileChange = (e) => {
         if (e.target.files.length > 0) {
@@ -35,13 +43,13 @@ export default function Dashboard() {
     };
 
     const handleLaunch = async () => {
-        if (!file || !domain) return;
+        if (!file || !domain || !user) return;
 
         setIsUploading(true);
         const formData = new FormData();
         formData.append('files', file);
         formData.append('domain', domain);
-        formData.append('userId', localStorage.getItem('userId'));
+        formData.append('userId', user.id);
 
         try {
             const method = activeTab === 'update' ? 'PUT' : 'POST';
@@ -74,6 +82,8 @@ export default function Dashboard() {
             console.error('Failed to copy', err);
         }
     };
+
+    if (!user) return null;
 
     return (
         <div className="flex justify-center items-center min-h-[calc(100vh-80px)] p-5">

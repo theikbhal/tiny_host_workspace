@@ -1,36 +1,43 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Navbar() {
     const [user, setUser] = useState(null);
     const pathname = usePathname();
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
+    const supabase = createClient();
 
     useEffect(() => {
         setMounted(true);
-        const userId = localStorage.getItem('userId');
-        if (userId) {
-            setUser({ id: userId });
-        }
-    }, []);
 
-    const handleSignOut = () => {
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+        });
+
+        // Listen for auth changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
+
+    const handleSignOut = async () => {
         if (confirm('Are you sure you want to sign out?')) {
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.href = '/';
+            await supabase.auth.signOut();
+            router.push('/');
+            router.refresh();
         }
     };
 
-    // Prevent hydration mismatch by rendering nothing until mounted, 
-    // or render a skeleton/default state. For simplicity, we'll render default (logged out) 
-    // and update after mount, but that causes layout shift. 
-    // Better to render null or a loading state if critical, but for this simple app, 
-    // we can just render.
-
-    if (!mounted) return null; // Or return a skeleton
+    if (!mounted) return null;
 
     return (
         <nav className="bg-white/95 backdrop-blur-sm px-8 py-4 flex justify-between items-center shadow-sm sticky top-0 z-50">
