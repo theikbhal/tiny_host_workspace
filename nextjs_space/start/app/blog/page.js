@@ -450,47 +450,30 @@ const articles = [
 export default function BlogPage() {
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                    <Link href="/" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                        <span className="text-2xl">⚡</span>
-                        <span>SimplHost</span>
-                    </Link>
-                    <nav className="flex gap-6 items-center">
-                        <Link href="/blog" className="text-primary font-semibold">Blog</Link>
-                        <Link href="/faq" className="text-gray-600 hover:text-gray-900">FAQ</Link>
-                        <Link href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</Link>
-                        <Link href="/login" className="text-gray-600 hover:text-gray-900">Log in</Link>
-                        <Link href="/register" className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">Sign Up Free</Link>
-                    </nav>
-                </div>
-            </header>
-
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-16">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-8">
                 <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">SimplHost Blog</h1>
-                    <p className="text-xl text-blue-100">Tutorials, guides, and tips for effortless web hosting</p>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2">SimplHost Blog</h1>
+                    <p className="text-base text-blue-100">Tutorials, guides, and tips for effortless web hosting</p>
                 </div>
             </div>
 
             {/* Articles Grid */}
-            <div className="max-w-6xl mx-auto px-4 py-12">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="max-w-6xl mx-auto px-4 py-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {articles.map((article) => (
                         <article key={article.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden">
-                            <div className="p-6">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-xs font-semibold text-primary bg-blue-50 px-3 py-1 rounded-full">
+                            <div className="p-5">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-xs font-semibold text-primary bg-blue-50 px-2 py-1 rounded-full">
                                         {article.category}
                                     </span>
                                     <span className="text-xs text-gray-500">{article.date}</span>
                                 </div>
-                                <h2 className="text-xl font-bold text-gray-900 mb-3 hover:text-primary">
+                                <h2 className="text-lg font-bold text-gray-900 mb-2 hover:text-primary">
                                     <Link href={`#article-${article.id}`}>{article.title}</Link>
                                 </h2>
-                                <p className="text-gray-600 text-sm mb-4">{article.excerpt}</p>
+                                <p className="text-gray-600 text-sm mb-3">{article.excerpt}</p>
                                 <a
                                     href={`#article-${article.id}`}
                                     className="text-primary font-semibold text-sm hover:underline inline-flex items-center gap-1"
