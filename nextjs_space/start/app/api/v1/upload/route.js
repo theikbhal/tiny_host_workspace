@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readSites, writeSites } from '@/lib/db';
+import { createClient } from '@/utils/supabase/server';
 import { processUploadedFile } from '@/lib/file-utils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,18 +13,40 @@ function buildSiteUrl(projectId, req) {
 
 export async function POST(request) {
     try {
+        const supabase = await createClient();
+
+        // Check authentication
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
         const formData = await request.formData();
         const file = formData.get('files');
         const domain = formData.get('domain');
-        const userId = formData.get('userId');
         const siteSettings = formData.get('siteSettings');
 
         if (!file) {
             return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
         }
 
-        const projectId = domain || uuidv4();
+        if (!domain) {
+            return NextResponse.json({ success: false, error: 'Domain is required' }, { status: 400 });
+        }
+
+        const projectId = domain;
         const link = buildSiteUrl(projectId, request);
+
+        // Check if domain already exists
+        const { data: existingSite } = await supabase
+            .from('sites')
+            .select('id')
+            .eq('domain', projectId)
+            .single();
+
+        if (existingSite) {
+            return NextResponse.json({ success: false, error: 'Domain already exists' }, { status: 409 });
+        }
 
         const result = await processUploadedFile(file, projectId);
 
@@ -32,20 +54,23 @@ export async function POST(request) {
             return NextResponse.json({ success: false, error: result.error }, { status: 500 });
         }
 
-        const sites = readSites();
-        const newSite = {
-            id: projectId,
-            userId: userId || null,
-            domain: projectId,
-            link: link,
-            status: 'active',
-            fileType: result.type,
-            settings: siteSettings ? JSON.parse(siteSettings) : {},
-            createdAt: new Date().toISOString()
-        };
+        // Insert into Supabase
+        const { data: newSite, error: insertError } = await supabase
+            .from('sites')
+            .insert({
+                user_id: user.id,
+                domain: projectId,
+                link: link,
+                status: 'active',
+                file_type: result.type,
+                settings: siteSettings ? JSON.parse(siteSettings) : {}
+            })
+            .select()
+            .single();
 
-        sites.push(newSite);
-        writeSites(sites);
+        if (insertError) {
+            return NextResponse.json({ success: false, error: insertError.message }, { status: 500 });
+        }
 
         return NextResponse.json({
             success: true,
@@ -67,6 +92,14 @@ export async function POST(request) {
 
 export async function PUT(request) {
     try {
+        const supabase = await createClient();
+
+        // Check authentication
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
         const formData = await request.formData();
         const file = formData.get('files');
         const domain = formData.get('domain');
@@ -88,19 +121,27 @@ export async function PUT(request) {
             fileType = result.type;
         }
 
-        const sites = readSites();
-        const siteIndex = sites.findIndex(s => s.domain === projectId);
+        // Update in Supabase
+        const updateData = {
+            link: link,
+            status: 'active',
+            settings: siteSettings ? JSON.parse(siteSettings) : {}
+        };
 
-        if (siteIndex !== -1) {
-            sites[siteIndex] = {
-                ...sites[siteIndex],
-                link: link,
-                status: 'active',
-                fileType: fileType || sites[siteIndex].fileType,
-                settings: siteSettings ? JSON.parse(siteSettings) : (sites[siteIndex].settings || {}),
-                updatedAt: new Date().toISOString()
-            };
-            writeSites(sites);
+        if (fileType) {
+            updateData.file_type = fileType;
+        }
+
+        const { data: updatedSite, error: updateError } = await supabase
+            .from('sites')
+            .update(updateData)
+            .eq('domain', projectId)
+            .eq('user_id', user.id)
+            .select()
+            .single();
+
+        if (updateError) {
+            return NextResponse.json({ success: false, error: updateError.message }, { status: 500 });
         }
 
         return NextResponse.json({

@@ -1,14 +1,31 @@
 import { NextResponse } from 'next/server';
-import { readSites } from '@/lib/db';
+import { createClient } from '@/utils/supabase/server';
 
 export async function GET() {
     try {
-        const sites = readSites();
+        const supabase = await createClient();
+
+        // Check authentication
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Get user's sites from Supabase
+        const { data: sites, error } = await supabase
+            .from('sites')
+            .select('link')
+            .eq('user_id', user.id);
+
+        if (error) {
+            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        }
+
         return NextResponse.json({
             success: true,
             data: {
-                links: sites.map(p => p.link),
-                quotaUsed: 5,
+                links: sites ? sites.map(s => s.link) : [],
+                quotaUsed: sites ? sites.length : 0,
                 quotaLimit: 1024
             }
         });
