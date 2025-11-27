@@ -8,60 +8,41 @@ export default function Home() {
     const [todos, setTodos] = useState([]);
     const [text, setText] = useState("");
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
+        const loadUser = async () => {
+            const { data } = await supabase.auth.getUser();
             setUser(data?.user || null);
-        });
+        };
+        loadUser();
     }, []);
 
-    async function loadTodos() {
-        const res = await fetch("/api/todos");
-        const data = await res.json();
-        setTodos(data);
-    }
-
-    useEffect(() => {
-        if (user) loadTodos();
-    }, [user]);
-
-    async function addTodo(e) {
-        e.preventDefault();
-
-        await fetch("/api/todos", {
-            method: "POST",
-            body: JSON.stringify({ text }),
-        });
-
-        setText("");
-        loadTodos();
-    }
-
-    async function toggleTodo(todo) {
-        await fetch("/api/todos", {
-            method: "PUT",
-            body: JSON.stringify({
-                id: todo.id,
-                completed: !todo.completed,
-            }),
-        });
-
-        loadTodos();
-    }
-
-    async function removeTodo(id) {
-        await fetch("/api/todos", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
-        });
-
-        loadTodos();
-    }
-
-    async function signIn() {
+    async function signInWithGoogle() {
         await supabase.auth.signInWithOAuth({
             provider: "google",
             options: { redirectTo: "http://localhost:3000" },
         });
+    }
+
+    async function signUpWithEmail() {
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+        });
+
+        if (error) alert(error.message);
+        else alert("Check your email for verification link ✅");
+    }
+
+    async function signInWithEmail() {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) alert(error.message);
     }
 
     async function signOut() {
@@ -69,20 +50,77 @@ export default function Home() {
         setUser(null);
     }
 
+    async function loadTodos() {
+        const res = await fetch("/api/todos");
+        const data = await res.json();
+        setTodos(data);
+    }
+
+    async function addTodo(e) {
+        e.preventDefault();
+
+        await fetch("/api/todos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text }),
+        });
+
+        setText("");
+        loadTodos();
+    }
+
+    useEffect(() => {
+        if (user) {
+            loadTodos();
+        }
+    }, [user]);
+
     return (
         <div style={styles.container}>
-            <h1>SimpleHost</h1>
+            <h1 style={styles.title}>SimpleHost</h1>
 
             {!user ? (
-                <button onClick={signIn} style={styles.btn}>
-                    Sign in with Google
-                </button>
-            ) : (
-                <>
-                    <p style={styles.email}>{user.email}</p>
-                    <button onClick={signOut} style={styles.btn}>Logout</button>
+                <div style={styles.card}>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={styles.input}
+                    />
 
-                    <h2>Todo App</h2>
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        style={styles.input}
+                    />
+
+                    <button onClick={signInWithEmail} style={styles.btn}>
+                        Login
+                    </button>
+
+                    <button onClick={signUpWithEmail} style={styles.btnSecondary}>
+                        Register
+                    </button>
+
+                    <hr style={styles.hr} />
+
+                    <button onClick={signInWithGoogle} style={styles.googleBtn}>
+                        Sign in with Google
+                    </button>
+                </div>
+            ) : (
+                <div style={styles.card}>
+                    <p style={styles.user}>Logged in as: {user.email}</p>
+                    <button onClick={signOut} style={styles.logoutBtn}>
+                        Logout
+                    </button>
+
+                    <hr style={styles.hr} />
+
+                    <h2 style={styles.todoTitle}>Todo App</h2>
 
                     <form onSubmit={addTodo} style={styles.form}>
                         <input
@@ -90,35 +128,18 @@ export default function Home() {
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                             style={styles.input}
-                            required
                         />
                         <button style={styles.btn}>Add</button>
                     </form>
 
-                    <ul style={styles.list}>
+                    <ul style={styles.todoList}>
                         {todos.map((t) => (
-                            <li key={t.id} style={styles.item}>
-                                <span
-                                    onClick={() => toggleTodo(t)}
-                                    style={{
-                                        ...styles.text,
-                                        textDecoration: t.completed ? "line-through" : "none",
-                                        color: t.completed ? "#888" : "#fff",
-                                    }}
-                                >
-                                    {t.text}
-                                </span>
-
-                                <button
-                                    onClick={() => removeTodo(t.id)}
-                                    style={styles.delete}
-                                >
-                                    ❌
-                                </button>
+                            <li key={t.id} style={styles.todoItem}>
+                                {t.text}
                             </li>
                         ))}
                     </ul>
-                </>
+                </div>
             )}
         </div>
     );
@@ -127,58 +148,80 @@ export default function Home() {
 const styles = {
     container: {
         minHeight: "100vh",
-        background: "#000",
-        color: "#fff",
-        padding: "30px",
-        fontFamily: "system-ui",
-    },
-    btn: {
-        background: "#1f2937",
+        background: "#0f172a",
         color: "white",
-        padding: "10px 16px",
-        borderRadius: "8px",
-        border: "none",
-        cursor: "pointer",
-        marginTop: "10px",
-    },
-    email: {
-        marginTop: "10px",
-        opacity: 0.7,
-    },
-    form: {
+        padding: "40px",
         display: "flex",
-        gap: "10px",
-        marginTop: "20px",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    card: {
+        background: "#020617",
+        padding: "30px",
+        borderRadius: "12px",
+        width: "100%",
+        maxWidth: "400px",
+    },
+    title: {
+        fontSize: "28px",
+        marginBottom: "20px",
+        textAlign: "center",
     },
     input: {
-        flex: 1,
+        width: "100%",
         padding: "12px",
-        borderRadius: "8px",
-        border: "1px solid #333",
-        background: "#111",
-        color: "#fff",
-    },
-    list: {
-        marginTop: "20px",
-        padding: 0,
-        listStyle: "none",
-    },
-    item: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "#111",
-        padding: "12px",
-        borderRadius: "8px",
         marginBottom: "10px",
+        background: "#020617",
+        border: "1px solid #1e293b",
+        borderRadius: "6px",
+        color: "white",
     },
-    text: {
-        cursor: "pointer",
-    },
-    delete: {
-        background: "transparent",
+    btn: {
+        width: "100%",
+        padding: "12px",
+        marginBottom: "10px",
+        background: "#2563eb",
         border: "none",
-        fontSize: "18px",
+        borderRadius: "6px",
+        color: "white",
         cursor: "pointer",
+    },
+    btnSecondary: {
+        width: "100%",
+        padding: "12px",
+        marginBottom: "10px",
+        background: "#334155",
+        border: "none",
+        borderRadius: "6px",
+        color: "white",
+        cursor: "pointer",
+    },
+    googleBtn: {
+        width: "100%",
+        padding: "12px",
+        background: "#dc2626",
+        border: "none",
+        borderRadius: "6px",
+        color: "white",
+        cursor: "pointer",
+    },
+    logoutBtn: {
+        background: "#dc2626",
+        padding: "8px 12px",
+        borderRadius: "6px",
+        border: "none",
+        color: "white",
+        cursor: "pointer",
+    },
+    user: { fontSize: "14px", color: "#94a3b8" },
+    hr: { margin: "20px 0", borderColor: "#1e293b" },
+    todoTitle: { fontSize: "20px", marginBottom: "10px" },
+    form: { display: "flex", gap: "8px" },
+    todoList: { marginTop: "10px" },
+    todoItem: {
+        background: "#020617",
+        marginBottom: "6px",
+        padding: "8px",
+        borderRadius: "6px",
     },
 };
