@@ -31,8 +31,20 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Failed to delete from database" }, { status: 500 });
         }
 
-        // TODO: Also delete from Cloudflare Worker storage if needed
-        // For now, just delete from database
+        // ✅ Delete from Cloudflare Worker storage
+        // This removes all files associated with the subdomain from R2
+        const workerDeleteUrl = `https://calm-rice-1449.simplhost.workers.dev/delete?subdomain=${subdomain}`;
+        try {
+            const workerRes = await fetch(workerDeleteUrl, { method: "DELETE" });
+            if (!workerRes.ok) {
+                console.error("Worker delete failed:", await workerRes.text());
+                // We don't fail the request if worker delete fails, as DB delete was successful
+            } else {
+                console.log("Worker delete successful");
+            }
+        } catch (workerErr) {
+            console.error("Worker delete error:", workerErr);
+        }
 
         return NextResponse.json({ success: true });
     } catch (err: any) {

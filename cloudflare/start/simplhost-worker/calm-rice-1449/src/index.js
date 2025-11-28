@@ -93,6 +93,30 @@ export default {
 			);
 		}
 
+		// =========================
+		// SITE DELETION ENDPOINT
+		// =========================
+		if (req.method === "DELETE" && url.pathname === "/delete") {
+			const subdomain = url.searchParams.get("subdomain");
+
+			if (!subdomain) {
+				return new Response("Missing subdomain", { status: 400 });
+			}
+
+			// List all objects with the subdomain prefix
+			const list = await env.SIMPLHOST_BUCKET.list({ prefix: `${subdomain}/` });
+
+			// Delete all objects
+			const keys = list.objects.map(obj => obj.key);
+			if (keys.length > 0) {
+				await env.SIMPLHOST_BUCKET.delete(keys);
+			}
+
+			return new Response(JSON.stringify({ success: true, deleted: keys.length }), {
+				headers: { "Content-Type": "application/json" }
+			});
+		}
+
 		return new Response("Worker running");
 	}
 };
