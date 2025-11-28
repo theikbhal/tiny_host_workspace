@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -35,33 +34,13 @@ export default function Home() {
 
   return (
     <div style={styles.page}>
-      {/* NAVBAR */}
-      <nav style={styles.nav}>
-        <div style={styles.logo}>SimplHost</div>
-        <div style={styles.navLinks}>
-          <Link href="/" style={styles.link}>Home</Link>
-          <Link href="/dashboard" style={styles.link}>Dashboard</Link>
-          <Link href="/login" style={styles.link}>Login</Link>
-        </div>
-
-      </nav>
-
-      {/* HERO */}
       <main style={styles.wrapper}>
         <h1 style={styles.heroTitle}>Deploy Static Sites Instantly</h1>
         <p style={styles.heroSubtitle}>
           Upload a ZIP or HTML file and deploy within seconds.
         </p>
 
-        <Link href="/dashboard" style={styles.dashboardBtn}>
-          Open Dashboard →
-        </Link>
-
-        <div style={styles.divider}></div>
-
-        {/* QUICK DEPLOY */}
-        <h2 style={styles.title}>Quick Deploy</h2>
-
+        {/* UPLOAD FORM */}
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="text"
@@ -103,77 +82,70 @@ const styles = {
     color: "white",
     fontFamily: "system-ui",
   },
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 40px",
-    borderBottom: "1px solid #222",
-  },
-  logo: { fontSize: "20px", fontWeight: "bold" },
-  navLinks: { display: "flex", gap: "20px" },
-  link: { color: "#ccc", textDecoration: "none" },
 
   wrapper: {
     display: "flex",
     flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: "80px",
-  },
-  heroTitle: { fontSize: "44px", marginBottom: "10px" },
-  heroSubtitle: { opacity: 0.7, marginBottom: "30px" },
-
-  dashboardBtn: {
-    background: "#111",
-    color: "#3b82f6",
-    padding: "12px 20px",
-    borderRadius: "10px",
-    textDecoration: "none",
-    border: "1px solid #333",
-    marginBottom: "40px",
+    paddingTop: "40px",
+    paddingBottom: "40px",
   },
 
-  divider: {
-    width: "50px",
-    height: "2px",
-    background: "#222",
-    marginBottom: "30px",
+  heroTitle: {
+    fontSize: "32px",
+    marginBottom: "8px",
+    fontWeight: 700,
+    textAlign: "center" as const,
   },
 
-  title: { fontSize: "26px", marginBottom: "20px" },
+  heroSubtitle: {
+    opacity: 0.7,
+    marginBottom: "32px",
+    fontSize: "14px",
+    textAlign: "center" as const,
+  },
 
   form: {
-    width: "320px",
+    width: "100%",
+    maxWidth: "400px",
     display: "flex",
     flexDirection: "column" as const,
-    gap: "12px",
+    gap: "10px",
+    padding: "0 20px",
   },
 
   input: {
-    padding: "12px",
-    borderRadius: "10px",
+    padding: "10px 12px",
+    borderRadius: "8px",
     background: "#111",
     border: "1px solid #333",
     color: "white",
+    fontSize: "14px",
   },
 
   button: {
     background: "#3b82f6",
     border: "none",
-    padding: "14px",
-    borderRadius: "12px",
+    padding: "12px",
+    borderRadius: "8px",
     color: "white",
     fontWeight: 600,
     cursor: "pointer",
+    fontSize: "14px",
   },
 
-  result: { marginTop: "25px", textAlign: "center" as const },
+  result: {
+    marginTop: "20px",
+    textAlign: "center" as const,
+    fontSize: "14px",
+  },
 
   liveLink: {
     display: "block",
     color: "#22c55e",
     marginTop: "6px",
     textDecoration: "underline",
+    fontSize: "14px",
   },
 };
