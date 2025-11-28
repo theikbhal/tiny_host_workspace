@@ -1,13 +1,37 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@supabase/supabase-js";
+
+function getTokenFromRequest(req: Request) {
+    const header = req.headers.get("authorization") || "";
+    const [, token] = header.split(" ");
+    return token || null;
+}
+
+function getSupabaseWithToken(accessToken: string) {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            global: {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            },
+        }
+    );
+}
 
 export async function DELETE(req: Request) {
     try {
-        // Get user session
-        const supabase = await createClient();
-        const { data: { session } } = await supabase.auth.getSession();
+        const token = getTokenFromRequest(req);
+        if (!token) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
 
-        if (!session) {
+        const supabase = getSupabaseWithToken(token);
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -24,14 +48,14 @@ export async function DELETE(req: Request) {
             .from("sites")
             .delete()
             .eq("id", id)
-            .eq("user_id", session.user.id);
+            .eq("user_id", user.id);
 
         if (deleteError) {
             console.error("Delete failed:", deleteError);
             return NextResponse.json({ error: "Failed to delete from database" }, { status: 500 });
         }
 
-        // ✅ Delete from Cloudflare Worker storage
+        // �o. Delete from Cloudflare Worker storage
         // This removes all files associated with the subdomain from R2
         const workerDeleteUrl = `https://calm-rice-1449.simplhost.workers.dev/delete?subdomain=${subdomain}`;
         try {

@@ -8,6 +8,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [liveURL, setLiveURL] = useState("");
     const [userName, setUserName] = useState("");
+    const [accessToken, setAccessToken] = useState<string | null>(null);
 
     useEffect(() => {
         async function protect() {
@@ -20,6 +21,7 @@ export default function Dashboard() {
                     data.session.user.email?.split('@')[0] ||
                     "User";
                 setUserName(name);
+                setAccessToken(data.session.access_token);
             }
         }
         protect();
@@ -28,6 +30,12 @@ export default function Dashboard() {
     async function deploySite() {
         if (!file || !subdomain) {
             alert("Enter subdomain and choose a ZIP");
+            return;
+        }
+
+        if (!accessToken) {
+            alert("Session missing. Please log in again.");
+            window.location.href = "/login";
             return;
         }
 
@@ -41,6 +49,9 @@ export default function Dashboard() {
         const res = await fetch("/api/sites", {
             method: "POST",
             body: form,
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
         });
 
         const data = await res.json();

@@ -47,6 +47,13 @@ export default {
 			const buf = new Uint8Array(await file.arrayBuffer());
 			const sitePath = `${subdomain}/`;
 
+			// Clean existing files for this subdomain to avoid stale assets
+			const existing = await env.SIMPLHOST_BUCKET.list({ prefix: sitePath });
+			const toDelete = existing.objects.map(obj => obj.key);
+			if (toDelete.length > 0) {
+				await env.SIMPLHOST_BUCKET.delete(toDelete);
+			}
+
 			// ZIP UPLOAD
 			if (fileName.toLowerCase().endsWith(".zip")) {
 				const unzipped = unzipSync(buf);
@@ -113,6 +120,46 @@ export default {
 			}
 
 			return new Response(JSON.stringify({ success: true, deleted: keys.length }), {
+				headers: { "Content-Type": "application/json" }
+			});
+		}
+
+		// =========================
+		// SITE RENAME (move files) ENDPOINT
+		// =========================
+		if (req.method === "POST" && url.pathname === "/rename") {
+			const form = await req.formData();
+			const oldSub = form.get("old_subdomain");
+			const newSub = form.get("new_subdomain");
+
+			if (!oldSub || !newSub) {
+				return new Response("Missing old_subdomain or new_subdomain", { status: 400 });
+			}
+
+			if (oldSub === newSub) {
+				return new Response(JSON.stringify({ success: true, moved: 0 }), {
+					headers: { "Content-Type": "application/json" }
+				});
+			}
+
+			const oldPrefix = `${oldSub}/`;
+			const newPrefix = `${newSub}/`;
+
+			const list = await env.SIMPLHOST_BUCKET.list({ prefix: oldPrefix });
+			const keys = list.objects.map(obj => obj.key);
+
+			for (const key of keys) {
+				const relPath = key.slice(oldPrefix.length);
+				const object = await env.SIMPLHOST_BUCKET.get(key);
+				if (!object) continue;
+				await env.SIMPLHOST_BUCKET.put(newPrefix + relPath, object.body);
+			}
+
+			if (keys.length > 0) {
+				await env.SIMPLHOST_BUCKET.delete(keys);
+			}
+
+			return new Response(JSON.stringify({ success: true, moved: keys.length }), {
 				headers: { "Content-Type": "application/json" }
 			});
 		}
