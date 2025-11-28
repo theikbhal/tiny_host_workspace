@@ -1,7 +1,32 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+    const [user, setUser] = useState<any>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check current session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    async function handleLogout() {
+        await supabase.auth.signOut();
+        router.push("/");
+    }
+
     return (
         <div
             style={{
@@ -18,9 +43,20 @@ export default function Navbar() {
             </Link>
 
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                <Link href="/" style={linkStyle}>Home</Link>
-                <Link href="/login" style={loginStyle}>Login</Link>
-                <Link href="/login" style={signupStyle}>Sign up free</Link>
+                {user ? (
+                    <>
+                        <Link href="/dashboard" style={linkStyle}>Dashboard</Link>
+                        <span style={{ fontSize: "14px", color: "#aaa" }}>
+                            {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                        </span>
+                        <button onClick={handleLogout} style={logoutStyle}>Logout</button>
+                    </>
+                ) : (
+                    <>
+                        <Link href="/login" style={linkStyle}>Login</Link>
+                        <Link href="/login" style={signupStyle}>Sign up free</Link>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -32,10 +68,15 @@ const linkStyle = {
     fontSize: "14px",
 };
 
-const loginStyle = {
+const logoutStyle = {
     color: "#fff",
     textDecoration: "none",
     fontSize: "14px",
+    background: "transparent",
+    border: "1px solid #333",
+    padding: "6px 14px",
+    borderRadius: "8px",
+    cursor: "pointer",
 };
 
 const signupStyle = {

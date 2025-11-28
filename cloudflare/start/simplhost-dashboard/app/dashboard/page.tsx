@@ -18,12 +18,19 @@ export default function Dashboard() {
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [liveURL, setLiveURL] = useState("");
+    const [userName, setUserName] = useState("");
 
     useEffect(() => {
         async function protect() {
             const { data } = await supabase.auth.getSession();
             if (!data.session) {
                 window.location.href = "/login";
+            } else {
+                // Get user name from session
+                const name = data.session.user.user_metadata?.full_name ||
+                    data.session.user.email?.split('@')[0] ||
+                    "User";
+                setUserName(name);
             }
         }
         protect();
@@ -79,18 +86,14 @@ export default function Dashboard() {
 
     return (
         <div style={styles.page}>
-            {/* NAV */}
-            <nav style={styles.nav}>
-                <div style={styles.logo}>SimplHost</div>
-                <div style={styles.navLinks}>
-                    <Link href="/" style={styles.link}>Home</Link>
-                    <Link href="/dashboard" style={styles.link}>Dashboard</Link>
-                </div>
-            </nav>
-
             {/* UPLOAD CARD */}
             <div style={styles.card}>
-                <h1 style={{ marginBottom: "20px" }}>Dashboard</h1>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                    <h1 style={{ margin: 0 }}>Dashboard</h1>
+                    <div style={{ fontSize: "14px", color: "#aaa" }}>
+                        Welcome, <span style={{ color: "#fff", fontWeight: 600 }}>{userName}</span>
+                    </div>
+                </div>
 
                 <input
                     placeholder="Subdomain"
@@ -177,17 +180,6 @@ const styles = {
         color: "#fff",
         fontFamily: "system-ui",
     },
-    nav: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "20px 40px",
-        borderBottom: "1px solid #222",
-    },
-    logo: { fontSize: "20px", fontWeight: "bold" },
-    navLinks: { display: "flex", gap: "20px" },
-    link: { color: "#ccc", textDecoration: "none" },
-
     card: {
         margin: "60px auto 20px",
         width: "420px",
@@ -237,7 +229,7 @@ const styles = {
 
     table: {
         width: "100%",
-        borderCollapse: "collapse",
+        borderCollapse: "collapse" as const,
         background: "#111",
         borderRadius: "12px",
     },
