@@ -95,18 +95,21 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        // Fetch only user's sites
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?user_id=eq.${session.user.id}&select=*&order=created_at.desc`,
-            {
-                headers: {
-                    apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                },
-            }
-        );
+        // Fetch only user's sites using authenticated client
+        console.log(`Fetching sites for user: ${session.user.id}`);
 
-        const data = await res.json();
+        const { data, error } = await supabase
+            .from("sites")
+            .select("*")
+            .eq("user_id", session.user.id)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Fetch sites failed:", error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        console.log(`Found ${data?.length || 0} sites`);
         return NextResponse.json(data);
     } catch (err: any) {
         console.error("Fetch sites failed:", err);
