@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -35,22 +34,7 @@ export default function Home() {
 
   return (
     <main style={styles.wrapper}>
-      {/* HERO */}
-      <h1 style={styles.heroTitle}>SimplHost</h1>
-      <p style={styles.heroSubtitle}>
-        Deploy static websites instantly using Cloudflare.
-      </p>
-
-      {/* QUICK ACTION */}
-      <Link href="/dashboard" style={styles.dashboardBtn}>
-        Open Dashboard →
-      </Link>
-
-      {/* Divider */}
-      <div style={styles.divider} />
-
-      {/* DEPLOY FORM */}
-      <h2 style={styles.title}>Quick Deploy</h2>
+      <h1 style={styles.title}>SimplHost Dashboard</h1>
 
       <form onSubmit={handleSubmit} style={styles.form}>
         <input
@@ -63,7 +47,6 @@ export default function Home() {
 
         <input
           type="file"
-          accept=".zip,.html"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           style={styles.input}
         />
@@ -73,7 +56,6 @@ export default function Home() {
         </button>
       </form>
 
-      {/* RESULT */}
       {url && (
         <div style={styles.result}>
           ✅ Live URL:
@@ -95,38 +77,10 @@ const styles = {
     flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
-    textAlign: "center" as const,
     fontFamily: "system-ui",
-    padding: "20px",
-  },
-  heroTitle: {
-    fontSize: "48px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-  },
-  heroSubtitle: {
-    fontSize: "18px",
-    opacity: 0.7,
-    marginBottom: "20px",
-  },
-  dashboardBtn: {
-    background: "#111",
-    border: "1px solid #333",
-    padding: "12px 20px",
-    borderRadius: "12px",
-    color: "#3b82f6",
-    textDecoration: "none",
-    fontWeight: 600,
-    marginBottom: "30px",
-  },
-  divider: {
-    width: "60px",
-    height: "2px",
-    background: "#222",
-    marginBottom: "30px",
   },
   title: {
-    fontSize: "28px",
+    fontSize: "32px",
     marginBottom: "20px",
   },
   form: {
@@ -137,28 +91,27 @@ const styles = {
   },
   input: {
     padding: "12px",
-    borderRadius: "10px",
+    borderRadius: "8px",
     border: "1px solid #333",
     background: "#111",
     color: "white",
   },
   button: {
-    padding: "14px",
-    borderRadius: "12px",
+    padding: "12px",
+    borderRadius: "8px",
     background: "#3b82f6",
     color: "white",
     border: "none",
-    fontWeight: 600,
     cursor: "pointer",
   },
   result: {
-    marginTop: "25px",
+    marginTop: "20px",
     fontSize: "16px",
   },
   link: {
     display: "block",
     color: "#22c55e",
-    marginTop: "6px",
+    marginTop: "5px",
     textDecoration: "underline",
   },
 };
