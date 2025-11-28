@@ -1,19 +1,8 @@
 "use client";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
-
-type Site = {
-    id: number;
-    subdomain: string;
-    domain: string;
-    created_at: string;
-};
 
 export default function Dashboard() {
-    const [sites, setSites] = useState<Site[]>([]);
     const [subdomain, setSubdomain] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
@@ -34,14 +23,7 @@ export default function Dashboard() {
             }
         }
         protect();
-        // loadSites();
     }, []);
-
-    async function loadSites() {
-        const res = await fetch("/api/sites");
-        const data = await res.json();
-        setSites(data);
-    }
 
     async function deploySite() {
         if (!file || !subdomain) {
@@ -68,21 +50,12 @@ export default function Dashboard() {
             setLiveURL(data.url);
             setSubdomain("");
             setFile(null);
-            loadSites();
         } else {
             alert("Upload failed");
         }
     }
 
-    async function deleteSite(subdomain: string, id: number) {
-        if (!confirm(`Delete ${subdomain}?`)) return;
 
-        await fetch(`/api/delete?subdomain=${subdomain}&id=${id}`, {
-            method: "DELETE",
-        });
-
-        setSites((prev) => prev.filter((s) => s.id !== id));
-    }
 
     return (
         <div style={styles.page}>
@@ -120,53 +93,6 @@ export default function Dashboard() {
                             {liveURL}
                         </a>
                     </div>
-                )}
-            </div>
-
-            {/* SITES TABLE */}
-            <div style={styles.tableWrap}>
-                <h2>Your Sites</h2>
-
-                {sites.length === 0 ? (
-                    <p style={{ opacity: 0.6 }}>No sites deployed yet.</p>
-                ) : (
-                    <table style={styles.table}>
-                        <thead>
-                            <tr>
-                                <th style={styles.th}>Subdomain</th>
-                                <th style={styles.th}>URL</th>
-                                <th style={styles.th}>Created</th>
-                                <th style={styles.th}>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sites.map((site) => (
-                                <tr key={site.id}>
-                                    <td style={styles.td}>{site.subdomain}</td>
-                                    <td style={styles.td}>
-                                        <a
-                                            href={`https://${site.domain}`}
-                                            target="_blank"
-                                            style={{ color: "#4da3ff" }}
-                                        >
-                                            {site.domain}
-                                        </a>
-                                    </td>
-                                    <td style={styles.td}>
-                                        {new Date(site.created_at).toLocaleString()}
-                                    </td>
-                                    <td style={styles.td}>
-                                        <button
-                                            onClick={() => deleteSite(site.subdomain, site.id)}
-                                            style={styles.deleteBtn}
-                                        >
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
                 )}
             </div>
         </div>

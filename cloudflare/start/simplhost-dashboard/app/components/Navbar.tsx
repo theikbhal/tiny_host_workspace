@@ -2,11 +2,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
     const [user, setUser] = useState<any>(null);
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         // Check current session
@@ -45,7 +46,12 @@ export default function Navbar() {
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                 {user ? (
                     <>
-                        <Link href="/dashboard" style={linkStyle}>Dashboard</Link>
+                        {pathname !== "/dashboard" && (
+                            <Link href="/dashboard" style={linkStyle}>Dashboard</Link>
+                        )}
+                        {pathname !== "/sites" && (
+                            <Link href="/sites" style={linkStyle}>Manage Sites</Link>
+                        )}
                         <span style={{ fontSize: "14px", color: "#aaa" }}>
                             {user.user_metadata?.full_name || user.email?.split('@')[0]}
                         </span>
