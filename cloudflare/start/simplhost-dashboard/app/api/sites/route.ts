@@ -49,31 +49,25 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: result }, { status: 500 });
         }
 
-        // ✅ Save to Supabase with user_id
-        const dbRes = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites`,
-            {
-                method: "POST",
-                headers: {
-                    apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                    "Content-Type": "application/json",
-                    Prefer: "return=minimal"
-                },
-                body: JSON.stringify({
-                    user_id: session.user.id,
-                    subdomain,
-                    domain: `${subdomain}.simplhost.com`,
-                    created_at: new Date().toISOString()
-                })
-            }
-        );
 
-        if (!dbRes.ok) {
-            const errorText = await dbRes.text();
-            console.error("Supabase insert failed:", errorText);
-            // Still return success since the site was deployed to worker
-            // but log the database error
+
+        // ✅ Save to Supabase using authenticated client
+        const { error: insertError } = await supabase
+            .from("sites")
+            .insert({
+                user_id: session.user.id,
+                domain: subdomain, // DB 'domain' column stores the subdomain
+                link: `https://${subdomain}.simplhost.com`, // DB 'link' column stores full URL
+                created_at: new Date().toISOString()
+            });
+
+        if (insertError) {
+            console.error("Supabase insert failed:", insertError);
+            // Return error to client so they know DB save failed
+            return NextResponse.json(
+                { error: "Site deployed but failed to save to database: " + insertError.message },
+                { status: 500 }
+            );
         }
 
         return NextResponse.json({

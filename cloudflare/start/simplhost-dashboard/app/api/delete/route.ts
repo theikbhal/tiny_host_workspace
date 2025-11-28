@@ -20,18 +20,14 @@ export async function DELETE(req: Request) {
         }
 
         // Delete from Supabase (only if user owns it)
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?id=eq.${id}&user_id=eq.${session.user.id}`,
-            {
-                method: "DELETE",
-                headers: {
-                    apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-                },
-            }
-        );
+        const { error: deleteError } = await supabase
+            .from("sites")
+            .delete()
+            .eq("id", id)
+            .eq("user_id", session.user.id);
 
-        if (!res.ok) {
+        if (deleteError) {
+            console.error("Delete failed:", deleteError);
             return NextResponse.json({ error: "Failed to delete from database" }, { status: 500 });
         }
 

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 
 type Site = {
     id: number;
-    subdomain: string;
-    domain: string;
+    domain: string; // This stores the subdomain
+    link: string;   // This stores the full URL
     created_at: string;
 };
 
@@ -38,10 +38,10 @@ export default function ManageSites() {
         setLoading(false);
     }
 
-    async function deleteSite(subdomain: string, id: number) {
-        if (!confirm(`Delete ${subdomain}?`)) return;
+    async function deleteSite(domain: string, id: number) {
+        if (!confirm(`Delete ${domain}?`)) return;
 
-        await fetch(`/api/delete?subdomain=${subdomain}&id=${id}`, {
+        await fetch(`/api/delete?subdomain=${domain}&id=${id}`, {
             method: "DELETE",
         });
 
@@ -73,14 +73,14 @@ export default function ManageSites() {
                         <tbody>
                             {sites.map((site) => (
                                 <tr key={site.id}>
-                                    <td style={styles.td}>{site.subdomain}</td>
+                                    <td style={styles.td}>{site.domain}</td>
                                     <td style={styles.td}>
                                         <a
-                                            href={`https://${site.domain}`}
+                                            href={site.link}
                                             target="_blank"
                                             style={styles.link}
                                         >
-                                            {site.domain}
+                                            {site.link}
                                         </a>
                                     </td>
                                     <td style={styles.td}>
@@ -89,14 +89,14 @@ export default function ManageSites() {
                                     <td style={styles.td}>
                                         <div style={{ display: "flex", gap: "8px" }}>
                                             <a
-                                                href={`https://${site.domain}`}
+                                                href={site.link}
                                                 target="_blank"
                                                 style={styles.viewBtn}
                                             >
                                                 View
                                             </a>
                                             <button
-                                                onClick={() => deleteSite(site.subdomain, site.id)}
+                                                onClick={() => deleteSite(site.domain, site.id)}
                                                 style={styles.deleteBtn}
                                             >
                                                 Delete
