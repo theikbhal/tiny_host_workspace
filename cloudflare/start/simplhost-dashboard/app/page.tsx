@@ -34,128 +34,143 @@ export default function Home() {
   }
 
   return (
-    <main style={styles.wrapper}>
-      {/* HERO */}
-      <h1 style={styles.heroTitle}>SimplHost</h1>
-      <p style={styles.heroSubtitle}>
-        Deploy static websites instantly using Cloudflare.
-      </p>
-
-      {/* QUICK ACTION */}
-      <Link href="/dashboard" style={styles.dashboardBtn}>
-        Open Dashboard →
-      </Link>
-
-      {/* Divider */}
-      <div style={styles.divider} />
-
-      {/* DEPLOY FORM */}
-      <h2 style={styles.title}>Quick Deploy</h2>
-
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Enter subdomain (ex: demo123)"
-          value={subdomain}
-          onChange={(e) => setSubdomain(e.target.value)}
-          style={styles.input}
-        />
-
-        <input
-          type="file"
-          accept=".zip,.html"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          style={styles.input}
-        />
-
-        <button type="submit" style={styles.button}>
-          {loading ? "Uploading..." : "Deploy Site"}
-        </button>
-      </form>
-
-      {/* RESULT */}
-      {url && (
-        <div style={styles.result}>
-          ✅ Live URL:
-          <a href={url} target="_blank" style={styles.link}>
-            {url}
-          </a>
+    <div style={styles.page}>
+      {/* NAVBAR */}
+      <nav style={styles.nav}>
+        <div style={styles.logo}>SimplHost</div>
+        <div style={styles.navLinks}>
+          <Link href="/" style={styles.link}>Home</Link>
+          <Link href="/dashboard" style={styles.link}>Dashboard</Link>
+          <Link href="/login" style={styles.link}>Login</Link>
         </div>
-      )}
-    </main>
+
+      </nav>
+
+      {/* HERO */}
+      <main style={styles.wrapper}>
+        <h1 style={styles.heroTitle}>Deploy Static Sites Instantly</h1>
+        <p style={styles.heroSubtitle}>
+          Upload a ZIP or HTML file and deploy within seconds.
+        </p>
+
+        <Link href="/dashboard" style={styles.dashboardBtn}>
+          Open Dashboard →
+        </Link>
+
+        <div style={styles.divider}></div>
+
+        {/* QUICK DEPLOY */}
+        <h2 style={styles.title}>Quick Deploy</h2>
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <input
+            type="text"
+            placeholder="Enter subdomain (ex: demo123)"
+            value={subdomain}
+            onChange={(e) => setSubdomain(e.target.value)}
+            style={styles.input}
+          />
+
+          <input
+            type="file"
+            accept=".zip,.html"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            style={styles.input}
+          />
+
+          <button type="submit" style={styles.button}>
+            {loading ? "Uploading..." : "Deploy Site"}
+          </button>
+        </form>
+
+        {url && (
+          <div style={styles.result}>
+            ✅ Live URL:
+            <a href={url} target="_blank" style={styles.liveLink}>
+              {url}
+            </a>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }
 
 const styles = {
-  wrapper: {
+  page: {
     minHeight: "100vh",
-    background: "#0b0b0b",
+    background: "#000",
     color: "white",
+    fontFamily: "system-ui",
+  },
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px 40px",
+    borderBottom: "1px solid #222",
+  },
+  logo: { fontSize: "20px", fontWeight: "bold" },
+  navLinks: { display: "flex", gap: "20px" },
+  link: { color: "#ccc", textDecoration: "none" },
+
+  wrapper: {
     display: "flex",
     flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
-    textAlign: "center" as const,
-    fontFamily: "system-ui",
-    padding: "20px",
+    paddingTop: "80px",
   },
-  heroTitle: {
-    fontSize: "48px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-  },
-  heroSubtitle: {
-    fontSize: "18px",
-    opacity: 0.7,
-    marginBottom: "20px",
-  },
+  heroTitle: { fontSize: "44px", marginBottom: "10px" },
+  heroSubtitle: { opacity: 0.7, marginBottom: "30px" },
+
   dashboardBtn: {
     background: "#111",
-    border: "1px solid #333",
-    padding: "12px 20px",
-    borderRadius: "12px",
     color: "#3b82f6",
+    padding: "12px 20px",
+    borderRadius: "10px",
     textDecoration: "none",
-    fontWeight: 600,
-    marginBottom: "30px",
+    border: "1px solid #333",
+    marginBottom: "40px",
   },
+
   divider: {
-    width: "60px",
+    width: "50px",
     height: "2px",
     background: "#222",
     marginBottom: "30px",
   },
-  title: {
-    fontSize: "28px",
-    marginBottom: "20px",
-  },
+
+  title: { fontSize: "26px", marginBottom: "20px" },
+
   form: {
+    width: "320px",
     display: "flex",
     flexDirection: "column" as const,
     gap: "12px",
-    width: "320px",
   },
+
   input: {
     padding: "12px",
     borderRadius: "10px",
-    border: "1px solid #333",
     background: "#111",
+    border: "1px solid #333",
     color: "white",
   },
+
   button: {
+    background: "#3b82f6",
+    border: "none",
     padding: "14px",
     borderRadius: "12px",
-    background: "#3b82f6",
     color: "white",
-    border: "none",
     fontWeight: 600,
     cursor: "pointer",
   },
-  result: {
-    marginTop: "25px",
-    fontSize: "16px",
-  },
-  link: {
+
+  result: { marginTop: "25px", textAlign: "center" as const },
+
+  liveLink: {
     display: "block",
     color: "#22c55e",
     marginTop: "6px",

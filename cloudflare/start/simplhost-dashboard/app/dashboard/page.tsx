@@ -1,6 +1,9 @@
 "use client";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type Site = {
     id: number;
@@ -16,9 +19,15 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [liveURL, setLiveURL] = useState("");
 
-    // Fetch sites
     useEffect(() => {
-        loadSites();
+        async function protect() {
+            const { data } = await supabase.auth.getSession();
+            if (!data.session) {
+                window.location.href = "/login";
+            }
+        }
+        protect();
+        // loadSites();
     }, []);
 
     async function loadSites() {
@@ -27,10 +36,9 @@ export default function Dashboard() {
         setSites(data);
     }
 
-    // Deploy site
     async function deploySite() {
         if (!file || !subdomain) {
-            alert("Please enter subdomain and choose a zip file");
+            alert("Enter subdomain and choose a ZIP");
             return;
         }
 
@@ -59,10 +67,8 @@ export default function Dashboard() {
         }
     }
 
-    // Delete site
     async function deleteSite(subdomain: string, id: number) {
-        const ok = confirm(`Delete ${subdomain}?`);
-        if (!ok) return;
+        if (!confirm(`Delete ${subdomain}?`)) return;
 
         await fetch(`/api/delete?subdomain=${subdomain}&id=${id}`, {
             method: "DELETE",
@@ -72,93 +78,69 @@ export default function Dashboard() {
     }
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                background: "#000",
-                color: "#fff",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                flexDirection: "column",
-                padding: 40,
-                fontFamily: "system-ui",
-            }}
-        >
-            {/* Upload Card */}
-            <div
-                style={{
-                    width: 420,
-                    background: "#111",
-                    borderRadius: 12,
-                    padding: 30,
-                    boxShadow: "0 0 20px rgba(255,255,255,0.05)",
-                }}
-            >
-                <h1 style={{ marginBottom: 20 }}>SimplHost Dashboard</h1>
+        <div style={styles.page}>
+            {/* NAV */}
+            <nav style={styles.nav}>
+                <div style={styles.logo}>SimplHost</div>
+                <div style={styles.navLinks}>
+                    <Link href="/" style={styles.link}>Home</Link>
+                    <Link href="/dashboard" style={styles.link}>Dashboard</Link>
+                </div>
+            </nav>
+
+            {/* UPLOAD CARD */}
+            <div style={styles.card}>
+                <h1 style={{ marginBottom: "20px" }}>Dashboard</h1>
 
                 <input
+                    placeholder="Subdomain"
                     value={subdomain}
                     onChange={(e) => setSubdomain(e.target.value)}
-                    placeholder="Enter subdomain (ex: demo123)"
-                    style={inputStyle}
+                    style={styles.input}
                 />
 
                 <input
                     type="file"
                     accept=".zip"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
-                    style={inputStyle}
+                    style={styles.input}
                 />
 
-                <button
-                    onClick={deploySite}
-                    disabled={loading}
-                    style={buttonStyle}
-                >
+                <button onClick={deploySite} style={styles.button} disabled={loading}>
                     {loading ? "Deploying..." : "Deploy Site"}
                 </button>
 
                 {liveURL && (
-                    <div style={{ marginTop: 15, color: "#7CFF9E" }}>
-                        ✅ Live URL: <br />
-                        <a href={liveURL} target="_blank" style={{ color: "#7CFF9E" }}>
+                    <div style={styles.liveBox}>
+                        ✅ Live URL:
+                        <a href={liveURL} target="_blank" style={styles.liveLink}>
                             {liveURL}
                         </a>
                     </div>
                 )}
             </div>
 
-            {/* Sites List */}
-            <div style={{ marginTop: 50, width: "100%", maxWidth: 900 }}>
-                <h2 style={{ marginBottom: 10 }}>Your Sites</h2>
+            {/* SITES TABLE */}
+            <div style={styles.tableWrap}>
+                <h2>Your Sites</h2>
 
                 {sites.length === 0 ? (
                     <p style={{ opacity: 0.6 }}>No sites deployed yet.</p>
                 ) : (
-                    <table
-                        style={{
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            marginTop: 10,
-                            background: "#111",
-                            borderRadius: 12,
-                            overflow: "hidden",
-                        }}
-                    >
+                    <table style={styles.table}>
                         <thead>
-                            <tr style={{ background: "#222" }}>
-                                <th style={thStyle}>Subdomain</th>
-                                <th style={thStyle}>URL</th>
-                                <th style={thStyle}>Created</th>
-                                <th style={thStyle}>Action</th>
+                            <tr>
+                                <th style={styles.th}>Subdomain</th>
+                                <th style={styles.th}>URL</th>
+                                <th style={styles.th}>Created</th>
+                                <th style={styles.th}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sites.map((site) => (
                                 <tr key={site.id}>
-                                    <td style={tdStyle}>{site.subdomain}</td>
-                                    <td style={tdStyle}>
+                                    <td style={styles.td}>{site.subdomain}</td>
+                                    <td style={styles.td}>
                                         <a
                                             href={`https://${site.domain}`}
                                             target="_blank"
@@ -167,22 +149,13 @@ export default function Dashboard() {
                                             {site.domain}
                                         </a>
                                     </td>
-                                    <td style={tdStyle}>
+                                    <td style={styles.td}>
                                         {new Date(site.created_at).toLocaleString()}
                                     </td>
-                                    <td style={tdStyle}>
+                                    <td style={styles.td}>
                                         <button
-                                            onClick={() =>
-                                                deleteSite(site.subdomain, site.id)
-                                            }
-                                            style={{
-                                                background: "red",
-                                                color: "#fff",
-                                                border: "none",
-                                                borderRadius: 6,
-                                                padding: "6px 12px",
-                                                cursor: "pointer",
-                                            }}
+                                            onClick={() => deleteSite(site.subdomain, site.id)}
+                                            style={styles.deleteBtn}
                                         >
                                             Delete
                                         </button>
@@ -197,38 +170,97 @@ export default function Dashboard() {
     );
 }
 
-const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "14px",
-    borderRadius: "10px",
-    border: "1px solid #333",
-    background: "#000",
-    color: "#fff",
-    marginBottom: "15px",
-    fontSize: "16px",
-};
+const styles = {
+    page: {
+        minHeight: "100vh",
+        background: "#000",
+        color: "#fff",
+        fontFamily: "system-ui",
+    },
+    nav: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "20px 40px",
+        borderBottom: "1px solid #222",
+    },
+    logo: { fontSize: "20px", fontWeight: "bold" },
+    navLinks: { display: "flex", gap: "20px" },
+    link: { color: "#ccc", textDecoration: "none" },
 
-const buttonStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "14px",
-    borderRadius: "10px",
-    border: "none",
-    background: "#3b82f6",
-    color: "#fff",
-    fontWeight: 600,
-    fontSize: "16px",
-    cursor: "pointer",
-};
+    card: {
+        margin: "60px auto 20px",
+        width: "420px",
+        background: "#111",
+        padding: "30px",
+        borderRadius: "16px",
+        boxShadow: "0 0 20px rgba(255,255,255,0.05)",
+    },
 
-const thStyle: React.CSSProperties = {
-    textAlign: "left",
-    padding: "12px",
-    borderBottom: "1px solid #333",
-    fontSize: "14px",
-};
+    input: {
+        width: "100%",
+        padding: "14px",
+        borderRadius: "12px",
+        background: "#000",
+        border: "1px solid #333",
+        color: "white",
+        marginBottom: "12px",
+    },
 
-const tdStyle: React.CSSProperties = {
-    padding: "12px",
-    borderBottom: "1px solid #222",
-    fontSize: "14px",
+    button: {
+        width: "100%",
+        padding: "14px",
+        borderRadius: "12px",
+        background: "#3b82f6",
+        color: "white",
+        fontWeight: 600,
+        border: "none",
+        cursor: "pointer",
+    },
+
+    liveBox: {
+        marginTop: "16px",
+        color: "#7CFF9E",
+    },
+
+    liveLink: {
+        display: "block",
+        color: "#7CFF9E",
+        marginTop: "6px",
+    },
+
+    tableWrap: {
+        maxWidth: "900px",
+        margin: "30px auto",
+        padding: "0 20px",
+    },
+
+    table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        background: "#111",
+        borderRadius: "12px",
+    },
+
+    th: {
+        padding: "12px",
+        borderBottom: "1px solid #333",
+        textAlign: "left" as const,
+        fontSize: "14px",
+    },
+
+    td: {
+        padding: "12px",
+        borderBottom: "1px solid #222",
+        fontSize: "14px",
+    },
+
+    deleteBtn: {
+        background: "#ff4242",
+        border: "none",
+        color: "#fff",
+        borderRadius: "8px",
+        padding: "6px 12px",
+        cursor: "pointer",
+    },
 };
