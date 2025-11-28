@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase-server";
 
 export async function DELETE(req: Request) {
     try {
+        // Get user session
+        const supabase = await createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const url = new URL(req.url);
         const subdomain = url.searchParams.get("subdomain");
         const id = url.searchParams.get("id");
@@ -10,9 +19,9 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Missing subdomain or id" }, { status: 400 });
         }
 
-        // Delete from Supabase
+        // Delete from Supabase (only if user owns it)
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?id=eq.${id}`,
+            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?id=eq.${id}&user_id=eq.${session.user.id}`,
             {
                 method: "DELETE",
                 headers: {

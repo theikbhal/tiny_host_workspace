@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import JSZip from "jszip";
+import { createClient } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
 
@@ -9,6 +10,14 @@ const WORKER_UPLOAD_URL =
 
 export async function POST(req: Request) {
     try {
+        // Get user session
+        const supabase = await createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const form = await req.formData();
 
         const file = form.get("file") as File;
@@ -40,8 +49,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: result }, { status: 500 });
         }
 
-        // ✅ Save to Supabase
-        await fetch(
+        // ✅ Save to Supabase with user_id
+        const dbRes = await fetch(
             `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites`,
             {
                 method: "POST",
@@ -52,12 +61,20 @@ export async function POST(req: Request) {
                     Prefer: "return=minimal"
                 },
                 body: JSON.stringify({
+                    user_id: session.user.id,
                     subdomain,
                     domain: `${subdomain}.simplhost.com`,
                     created_at: new Date().toISOString()
                 })
             }
         );
+
+        if (!dbRes.ok) {
+            const errorText = await dbRes.text();
+            console.error("Supabase insert failed:", errorText);
+            // Still return success since the site was deployed to worker
+            // but log the database error
+        }
 
         return NextResponse.json({
             success: true,
@@ -75,16 +92,33 @@ export async function POST(req: Request) {
 
 
 export async function GET() {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?select=*`,
-        {
-            headers: {
-                apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-            },
-        }
-    );
+    try {
+        // Get user session
+        const supabase = await createClient();
+        const { data: { session } } = await supabase.auth.getSession();
 
-    const data = await res.json();
-    return NextResponse.json(data);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Fetch only user's sites
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sites?user_id=eq.${session.user.id}&select=*&order=created_at.desc`,
+            {
+                headers: {
+                    apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+                },
+            }
+        );
+
+        const data = await res.json();
+        return NextResponse.json(data);
+    } catch (err: any) {
+        console.error("Fetch sites failed:", err);
+        return NextResponse.json(
+            { error: err.message || "Failed to fetch sites" },
+            { status: 500 }
+        );
+    }
 }
