@@ -1,0 +1,19 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "calm-rice-1449",
+	"main": "src/index.js",
+	"compatibility_date": "2025-11-28",
+	"observability": {
+		"enabled": true
+	},
+	"r2_buckets": [
+		{
+			"binding": "SIMPLHOST_BUCKET",
+			"bucket_name": "simplhost-storage"
+		}
+	],
+	"vars": {
+		"SUPABASE_URL": "https://dwwpqqbbwpjsexqoowyv.supabase.co",
+		"SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3d3BxcWJid3Bqc2V4cW9vd3l2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDQ0MDksImV4cCI6MjA3OTc4MDQwOX0.e36j8zeshs_grzNwvQfJ-6RHQpWXULQAm0Z4tPnHfeg"
+	}
+}
